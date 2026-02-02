@@ -1,0 +1,313 @@
+.pageContainer {
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+/* Template Gallery / Start New Section */
+.templateGallery {
+    background-color: #f0f2f5;
+    padding: 20px 40px;
+    border-bottom: 1px solid #dadce0;
+}
+
+.galleryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionHeading {
+    font-size: 16px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.createCard {
+    width: 160px;
+    height: 120px;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #dadce0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+}
+
+.createCard:hover {
+    box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+    border-color: #dadce0;
+}
+
+.cardLabel {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #202124;
+    font-weight: 500;
+}
+
+.newFormContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionHeading {
+    font-size: 16px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.galleryActions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.textBtn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #5f6368;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.iconBtn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.iconBtn:hover {
+    background-color: rgba(95, 99, 104, 0.1);
+}
+
+.templateList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.templateCard {
+    cursor: pointer;
+}
+
+.cardPreview {
+    background-color: #fff;
+    height: 120px;
+    border-radius: 4px;
+    border: 1px solid #dadce0;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.templateCard:hover .cardPreview {
+    border-color: #673AB7;
+    /* Google Forms Purple */
+}
+
+.blankCard .cardPreview {
+    background-color: #fff;
+}
+
+/* Refined Plus Icon */
+.plusIcon {
+    font-size: 52px;
+    font-weight: 300;
+    color: #D93025;
+    /* Red base */
+    /* Try to mimic the multi-color plus via text gradient if possible, or fallback to red */
+    background: conic-gradient(from 0deg, #ea4335 0 90deg, #fbbc04 90deg 180deg, #34a853 180deg 270deg, #4285f4 270deg 360deg);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
+    line-height: 1;
+}
+
+.cardLabel {
+    font-size: 14px;
+    color: #202124;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Recent Forms */
+.recentForms {
+    padding: 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.recentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ownerFilter {
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.displayOptions {
+    display: flex;
+    gap: 5px;
+}
+
+/* Forms Grid & Content */
+.formsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+.formCard {
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    background-color: #fff;
+}
+
+.formCard:hover {
+    box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+}
+
+.formPreview {
+    height: 156px;
+    background-color: #f1f3f4;
+    border-bottom: 1px solid #dadce0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mockFormContent {
+    width: 130px;
+    height: 140px;
+    margin-top: 10px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 8px;
+    opacity: 0.9;
+}
+
+.mockRow {
+    height: 6px;
+    background-color: #e8eaed;
+    border-radius: 2px;
+    width: 100%;
+}
+
+.mockRowShort {
+    width: 70%;
+}
+
+.formInfo {
+    padding: 14px 16px;
+    background-color: #fff;
+}
+
+.formTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #202124;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.2px;
+}
+
+.formMeta {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #5f6368;
+    gap: 8px;
+}
+
+.formIcon {
+    font-size: 14px;
+    color: #673AB7;
+    /* Google Form Purple */
+}
+
+.lastOpened {
+    flex: 1;
+    font-weight: 400;
+}
+
+.moreOptions {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #5f6368;
+    padding: 4px 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.moreOptions:hover {
+    background-color: rgba(95, 99, 104, 0.1);
+}
+
+/* Updated Template Styles for better mocks */
+.mockTemplateContent {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+}
+
+.mockHeader {
+    width: 100%;
+    border-radius: 2px;
+}
+
+.mockLine {
+    margin-top: 5px;
+    border-radius: 2px;
+}

@@ -26,10 +26,10 @@
 }
 
 .createCard {
-    width: 160px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
     background-color: #fff;
-    border-radius: 4px;
+    border-radius: 12px;
     border: 1px solid #dadce0;
     display: flex;
     justify-content: center;
@@ -37,6 +37,19 @@
     cursor: pointer;
     transition: box-shadow 0.2s, border-color 0.2s;
     position: relative;
+    margin-bottom: 8px;
+}
+
+.plusIcon {
+    font-size: 72px;
+    font-weight: 300;
+    background: conic-gradient(from 0deg, #ea4335 0 90deg, #fbbc04 90deg 180deg, #34a853 180deg 270deg, #4285f4 270deg 360deg);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
+    line-height: 1;
 }
 
 .createCard:hover {

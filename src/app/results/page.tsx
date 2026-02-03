@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link';
 import { useState } from 'react';
 import styles from './assessment.module.css';
 
@@ -22,16 +23,12 @@ export default function CreateAssessmentPage() {
         </div>
 
         <div className={styles.newFormContainer}>
-          <div style={{ width: '160px' }}>
-            <div className={styles.createCard}>
-              <svg width="60" height="60" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" clipRule="evenodd" d="M28 20V4H20V20H4V28H20V44H28V28H44V20H28Z" fill="white" />
-                <rect x="20" y="4" width="8" height="20" fill="#4285F4" />
-                <rect x="20" y="24" width="8" height="20" fill="#34A853" />
-                <rect x="4" y="20" width="20" height="8" fill="#FBBC05" />
-                <rect x="24" y="20" width="20" height="8" fill="#EA4335" />
-              </svg>
-            </div>
+          <div style={{ width: '180px' }}>
+            <Link href="/results/create" style={{ textDecoration: 'none' }}>
+              <div className={styles.createCard}>
+                <span className={styles.plusIcon}>+</span>
+              </div>
+            </Link>
             <div className={styles.cardLabel}>แบบฟอร์มเปล่า</div>
           </div>
         </div>

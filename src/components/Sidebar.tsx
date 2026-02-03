@@ -36,12 +36,35 @@ export default function Sidebar() {
                     </Link>
                 </div>
             </nav>
-            <div className="sidebar-footer">
-                <div className="user-card">
-                    <div className="user-avatar">น</div>
+
+            <div className="sidebar-bottom-profile">
+                {/* User Profile */}
+                <div className="user-profile-card">
+                    <div className="avatar-wrapper">
+                        <div className="user-avatar-lg">N</div>
+                        <div className="avatar-status"></div>
+                    </div>
                     <div className="user-info">
                         <p className="user-name">นักเรียน</p>
                         <p className="user-role">Student</p>
+                    </div>
+                </div>
+
+                {/* Vertical Stats Links */}
+                <div className="profile-stats">
+                    <div className="p-stat-row">
+                        <span className="p-icon">🛍️</span>
+                        <span className="p-text">แบบประเมินที่ทำแล้ว: 3</span>
+                        <span className="status-dot green"></span>
+                    </div>
+                    <div className="p-stat-row">
+                        <span className="p-icon">🏆</span>
+                        <span className="p-text">รอประเมิน: 1</span>
+                        <span className="status-dot light-green">+</span>
+                    </div>
+                    <div className="p-stat-row">
+                        <span className="status-dot green"></span>
+                        <span className="p-text">Online</span>
                     </div>
                 </div>
             </div>

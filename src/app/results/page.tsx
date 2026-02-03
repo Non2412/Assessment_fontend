@@ -5,10 +5,10 @@ import styles from './assessment.module.css';
 export default function CreateAssessmentPage() {
   const [filter, setFilter] = useState('owned-me');
 
-
-
-  // ข้อมูลจำลองสำหรับ Recent Forms
-  const recentForms: any[] = [];
+  // Mock data for Created Forms (Results)
+  const recentForms = [
+    { id: 1, title: 'แบบประเมินความพึงพอใจ', subtitle: 'Web Development', icon: '📝' }
+  ];
 
   return (
     <div className={styles.pageContainer}>
@@ -25,13 +25,11 @@ export default function CreateAssessmentPage() {
           <div style={{ width: '160px' }}>
             <div className={styles.createCard}>
               <svg width="60" height="60" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Custom SVG path for Google Plus Icon */}
-                <path fillRule="evenodd" clipRule="evenodd" d="M28 20V4H20V20H4V28H20V44H28V28H44V20H28Z" fill="white" /> {/* Mask/Guideline */}
-                <rect x="20" y="4" width="8" height="20" fill="#4285F4" /> {/* Top Blue */}
-                <rect x="20" y="24" width="8" height="20" fill="#34A853" /> {/* Bottom Green */}
-                <rect x="4" y="20" width="20" height="8" fill="#FBBC05" /> {/* Left Yellow */}
-                <rect x="24" y="20" width="20" height="8" fill="#EA4335" /> {/* Right Red */}
-                {/* Center overlap fix if needed, but rects cover it */}
+                <path fillRule="evenodd" clipRule="evenodd" d="M28 20V4H20V20H4V28H20V44H28V28H44V20H28Z" fill="white" />
+                <rect x="20" y="4" width="8" height="20" fill="#4285F4" />
+                <rect x="20" y="24" width="8" height="20" fill="#34A853" />
+                <rect x="4" y="20" width="20" height="8" fill="#FBBC05" />
+                <rect x="24" y="20" width="20" height="8" fill="#EA4335" />
               </svg>
             </div>
             <div className={styles.cardLabel}>แบบฟอร์มเปล่า</div>
@@ -65,23 +63,18 @@ export default function CreateAssessmentPage() {
 
         <div className={styles.formsGrid}>
           {recentForms.map((form) => (
-            <div key={form.id} className={styles.formCard}>
-              <div className={styles.formPreview}>
-                <div className={styles.mockFormContent}>
-                  <div className={styles.mockRow} style={{ height: '8px', marginBottom: '4px' }}></div>
-                  <div className={styles.mockRow}></div>
-                  <div className={`${styles.mockRow} ${styles.mockRowShort}`}></div>
-
-                  <div className={styles.mockRow} style={{ marginTop: 'auto' }}></div>
-                </div>
+            <div key={form.id} className={styles.resultCard}>
+              <div className={styles.resultCardImg}></div>
+              <div className={styles.resultCardAvatar}>
+                {/* Icon SVG (Clipboard/Form) */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
               </div>
-              <div className={styles.formInfo}>
-                <div className={styles.formTitle}>{form.title}</div>
-                <div className={styles.formMeta}>
-                  <div className={styles.formIcon}>📝</div>
-                  <span className={styles.lastOpened}>{form.lastOpened}</span>
-                  <button className={styles.moreOptions}>⋮</button>
-                </div>
+              <div className={styles.cardContent}>
+                <div className={styles.resultCardTitle}>{form.title}</div>
+                <div className={styles.resultCardSubtitle}>{form.subtitle}</div>
+                <button className={styles.resultCardBtn}>ดูผลลัพธ์</button>
               </div>
             </div>
           ))}

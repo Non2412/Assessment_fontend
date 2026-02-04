@@ -1,0 +1,261 @@
+.pageContainer {
+    background-color: #fff;
+    min-height: 100vh;
+}
+
+/* Template Gallery / Start New Section */
+.templateGallery {
+    background-color: #f0f2f5;
+    padding: 20px 40px;
+    border-bottom: 1px solid #dadce0;
+}
+
+.galleryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionHeading {
+    font-size: 16px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.createCard {
+    width: 180px;
+    height: 180px;
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1px solid #dadce0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.plusIcon {
+    font-size: 72px;
+    font-weight: 300;
+    background: conic-gradient(from 0deg, #ea4335 0 90deg, #fbbc04 90deg 180deg, #34a853 180deg 270deg, #4285f4 270deg 360deg);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
+    line-height: 1;
+}
+
+.createCard:hover {
+    box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+    border-color: #dadce0;
+}
+
+.cardLabel {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #202124;
+    font-weight: 500;
+}
+
+.newFormContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.galleryActions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.iconBtn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+}
+
+.iconBtn:hover {
+    background-color: rgba(95, 99, 104, 0.1);
+}
+
+/* Recent Forms */
+.recentForms {
+    padding: 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.recentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ownerFilter {
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.displayOptions {
+    display: flex;
+    gap: 5px;
+}
+
+/* Forms Grid & Content */
+.formsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* Adjusted for wider cards */
+    gap: 30px;
+    padding-bottom: 40px;
+}
+
+/* Custom Result Card Styles */
+.resultCard {
+    --main-color: #059669;
+    /* Theme Green */
+    --submain-color: #78858F;
+    --bg-color: #fff;
+    position: relative;
+    width: 100%;
+    height: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px;
+    background: var(--bg-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    /* Softer shadow */
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.resultCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.resultCardImg {
+    height: 160px;
+    width: 100%;
+    background: linear-gradient(135deg, #A7F3D0 0%, #34D399 100%);
+    /* Geometric Pattern SVG Background */
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%236EE7B7' fill-opacity='0.2'/%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='%2310B981' fill-opacity='0.1'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+}
+
+.resultCardAvatar {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: var(--bg-color);
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 110px;
+    /* Adjusted position */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    padding: 15px;
+}
+
+.resultCardAvatar svg {
+    width: 100%;
+    height: 100%;
+    color: #059669;
+}
+
+.cardContent {
+    margin-top: 60px;
+    /* Space for avatar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px 20px;
+    width: 100%;
+    flex: 1;
+}
+
+.resultCardTitle {
+    font-weight: 600;
+    font-size: 18px;
+    color: #111;
+    text-align: center;
+    margin-bottom: 5px;
+    line-height: 1.3;
+}
+
+.resultCardSubtitle {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--submain-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.resultCardBtn {
+    margin-top: auto;
+    width: 120px;
+    height: 36px;
+    border: 2px solid var(--main-color);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--main-color);
+    background: var(--bg-color);
+    text-transform: uppercase;
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+}
+
+.resultCardBtn:hover {
+    background: var(--main-color);
+    color: var(--bg-color);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+.resultCardBtnFilled {
+    width: 120px;
+    height: 36px;
+    border: 2px solid var(--main-color);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--bg-color);
+    background: var(--main-color);
+    text-transform: uppercase;
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+}
+
+.resultCardBtnFilled:hover {
+    background: #047857;
+    border-color: #047857;
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+}

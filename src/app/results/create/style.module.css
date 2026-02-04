@@ -93,6 +93,7 @@
         0 10px 30px rgba(0, 0, 0, 0.05),
         inset 0 0 0 2px #f1f5f9;
     /* Subtle inner border */
+    border: 3px dashed white;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -190,13 +191,11 @@
 
 /* Create Button (Submit) */
 .createButton {
-    position: absolute;
-    bottom: 50px;
-    right: 50px;
     background: #10b981;
     color: white;
     padding: 15px 40px;
-    border-radius: 50px;
+    border-radius: 20px;
+    /* Matching input radius */
     font-size: 1.1rem;
     font-weight: 700;
     border: none;
@@ -205,7 +204,10 @@
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    margin-top: 25px;
+    width: 100%;
 }
 
 .createButton:hover {
@@ -284,7 +286,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: transform 0.2s;
-    border: 2px dashed #d1fae5;
+    border: 3px dashed white;
     position: relative;
     overflow: hidden;
 }

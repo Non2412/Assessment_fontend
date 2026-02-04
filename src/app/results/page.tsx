@@ -3,16 +3,36 @@ import React, { useState } from 'react';
 import styles from './assessment.module.css';
 import CreateAssessmentModal from './CreateAssessmentModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import PublishConfirmationModal from './PublishConfirmationModal';
 
 export default function CreateAssessmentPage() {
   const [filter, setFilter] = useState('owned-me');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [publishingId, setPublishingId] = useState<number | null>(null);
 
   // State for forms list to support adding new drafts
-  const [recentForms, setRecentForms] = useState([
-    { id: 1, title: 'แบบประเมินความพึงพอใจ', subtitle: 'Web Development', icon: '📝', isDraft: false }
-  ]);
+  const [recentForms, setRecentForms] = useState<any[]>([]);
+
+  // Load from LocalStorage on mount
+  React.useEffect(() => {
+    const saved = localStorage.getItem('assessment_forms');
+    if (saved) {
+      setRecentForms(JSON.parse(saved));
+    } else {
+      // Default initial data if empty
+      setRecentForms([
+        { id: 1, title: 'แบบประเมินความพึงพอใจ', subtitle: 'Web Development', icon: '📝', isDraft: false, isPublished: false }
+      ]);
+    }
+  }, []);
+
+  // Save to LocalStorage whenever forms change
+  React.useEffect(() => {
+    if (recentForms.length > 0) {
+      localStorage.setItem('assessment_forms', JSON.stringify(recentForms));
+    }
+  }, [recentForms]);
 
   // Track which form is being edited (if any)
   const [editingForm, setEditingForm] = useState<any>(null);
@@ -53,7 +73,8 @@ export default function CreateAssessmentPage() {
         title: data.title || 'แบบร่าง (ไม่มีชื่อ)',
         subtitle: 'ฉบับร่างล่าสุด',
         icon: '📄',
-        isDraft: true
+        isDraft: true,
+        isPublished: false
       }, ...prev]);
     }
   };
@@ -71,7 +92,8 @@ export default function CreateAssessmentPage() {
         title: data.title,
         subtitle: 'สร้างเสร็จสมบูรณ์',
         icon: '✅',
-        isDraft: false
+        isDraft: false,
+        isPublished: false
       }, ...prev]);
     }
   };
@@ -85,6 +107,16 @@ export default function CreateAssessmentPage() {
     if (deletingId) {
       setRecentForms(prev => prev.filter(f => f.id !== deletingId));
       setDeletingId(null);
+    }
+  };
+
+  const confirmPublish = () => {
+    if (publishingId) {
+      // Mock publish action: update status/icon
+      setRecentForms(prev => prev.map(f =>
+        f.id === publishingId ? { ...f, subtitle: 'กำลังเปิดใช้งาน (Published)', icon: '🚀', isPublished: true, status: 'Open' } : f
+      ));
+      setPublishingId(null);
     }
   };
 
@@ -196,9 +228,13 @@ export default function CreateAssessmentPage() {
                 {form.isDraft ? (
                   <span style={{ fontSize: '20px' }}>✏️</span>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                  </svg>
+                  form.icon === '🚀' ? (
+                    <span style={{ fontSize: '28px' }}>🚀</span>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                  )
                 )}
               </div>
               <div className={styles.cardContent}>
@@ -215,7 +251,24 @@ export default function CreateAssessmentPage() {
                   }}>ฉบับร่าง</span>}
                 </div>
                 <div className={styles.resultCardSubtitle}>{form.subtitle}</div>
-                {!form.isDraft && <button className={styles.resultCardBtn}>ดูผลลัพธ์</button>}
+
+                {!form.isDraft && (
+                  <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', width: '100%' }}>
+                    <button className={styles.resultCardBtn} style={{ flex: 1, width: 'auto', padding: '0' }}>
+                      ดูผลลัพธ์
+                    </button>
+                    <button
+                      className={styles.resultCardBtnFilled}
+                      style={{ flex: 1, width: 'auto', padding: '0' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPublishingId(form.id);
+                      }}
+                    >
+                      ลงทะเบียน
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -235,6 +288,12 @@ export default function CreateAssessmentPage() {
         isOpen={!!deletingId}
         onClose={() => setDeletingId(null)}
         onConfirm={confirmDelete}
+      />
+
+      <PublishConfirmationModal
+        isOpen={!!publishingId}
+        onClose={() => setPublishingId(null)}
+        onConfirm={confirmPublish}
       />
     </div>
   );

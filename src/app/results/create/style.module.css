@@ -1,0 +1,356 @@
+/* Create Form Styles */
+.container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 50px;
+    background: linear-gradient(135deg, #a7f3d0 0%, #dcfce7 100%);
+    /* Green-200 to Green-100 */
+    border-radius: 40px;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 8px rgba(255, 255, 255, 0.3);
+    /* Inner shine */
+    border: 1px solid #86efac;
+    min-height: 550px;
+    display: flex;
+    gap: 50px;
+    position: relative;
+    font-family: var(--font-kanit), 'Prompt', sans-serif;
+}
+
+.leftColumn {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.rightColumn {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #14532d;
+    /* Dark Green */
+    margin-left: 15px;
+    opacity: 0.9;
+}
+
+.inputField,
+.textArea {
+    width: 100%;
+    padding: 18px 25px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-color: #ffffff;
+    font-size: 1rem;
+    color: #334155;
+    outline: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.textArea {
+    resize: none;
+    min-height: 140px;
+    line-height: 1.6;
+}
+
+.inputField:focus,
+.textArea:focus {
+    background-color: #fff;
+    border-color: #4ade80;
+    box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);
+    transform: translateY(-2px);
+}
+
+.inputField::placeholder,
+.textArea::placeholder {
+    color: #cbd5e1;
+}
+
+.uploadCard {
+    background-color: #ffffff;
+    border-radius: 35px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.05),
+        inset 0 0 0 2px #f1f5f9;
+    /* Subtle inner border */
+    border: 3px dashed white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.uploadCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.uploadCircle {
+    width: 130px;
+    height: 130px;
+    background: #94a3b8;
+    /* Slate-400 */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(148, 163, 184, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.uploadCard:hover .uploadCircle {
+    background: #64748b;
+    /* Slate-500 */
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(100, 116, 139, 0.5);
+}
+
+.uploadIcon {
+    font-size: 32px;
+    margin-bottom: 5px;
+    opacity: 0.9;
+}
+
+.uploadText {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.fileInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.previewArea {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+}
+
+/* Button to go back */
+.backButton {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    text-decoration: none;
+    color: #475569;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.backButton:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+}
+
+/* Create Button (Submit) */
+.createButton {
+    background: #10b981;
+    color: white;
+    padding: 15px 40px;
+    border-radius: 20px;
+    /* Matching input radius */
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.createButton:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(5, 150, 105, 0.4);
+}
+
+.leftColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rightColumn {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-family: var(--font-kanit), sans-serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #1a2e05;
+    margin-left: 10px;
+}
+
+.inputField {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 25px;
+    border: none;
+    background-color: #ffffff;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s;
+}
+
+.inputField:focus {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.textArea {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 25px;
+    border: none;
+    background-color: #ffffff;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    resize: none;
+    min-height: 120px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.uploadCard {
+    background-color: #ffffff;
+    border-radius: 30px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 3px dashed white;
+    position: relative;
+    overflow: hidden;
+}
+
+.uploadCard:hover {
+    transform: scale(1.02);
+    background-color: #f8fafc;
+}
+
+.uploadCircle {
+    width: 140px;
+    height: 140px;
+    background-color: #94a3b8;
+    /* Gray circle */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+}
+
+.uploadCard:hover .uploadCircle {
+    background-color: #64748b;
+}
+
+.uploadText {
+    font-family: var(--font-kanit), sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.fileInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.previewArea {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.backButton {
+    position: absolute;
+    top: -50px;
+    left: 0;
+    text-decoration: none;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}

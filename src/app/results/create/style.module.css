@@ -1,0 +1,174 @@
+.container {
+    max-width: 770px;
+    margin: 0 auto;
+    padding-bottom: 60px;
+}
+
+.titleCard {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    border-top: 10px solid #673ab7;
+    /* Google Forms Purple */
+    padding: 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.inputGroup {
+    margin-bottom: 24px;
+}
+
+.formTitleInput {
+    font-family: 'Google Sans', Roboto, Arial, sans-serif;
+    font-size: 32px;
+    line-height: 40px;
+    color: #202124;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    width: 100%;
+    padding: 8px 0;
+    outline: none;
+    transition: border-bottom-color 0.2s;
+}
+
+.formTitleInput:focus {
+    border-bottom: 2px solid #673ab7;
+}
+
+.formDescInput {
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 14px;
+    color: #202124;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    width: 100%;
+    padding: 4px 0;
+    outline: none;
+    margin-top: 16px;
+    resize: none;
+}
+
+.formDescInput:focus {
+    border-bottom: 2px solid #673ab7;
+}
+
+.questionCard {
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    padding: 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.questionInput {
+    background-color: #f8f9fa;
+    border: none;
+    border-bottom: 1px solid #80868b;
+    padding: 16px;
+    font-size: 16px;
+    width: 100%;
+    outline: none;
+    box-sizing: border-box;
+    transition: background-color 0.2s, border-bottom 0.2s;
+}
+
+.questionInput:focus {
+    background-color: #e8f0fe;
+    border-bottom: 2px solid #673ab7;
+}
+
+.optionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.optionRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.radioCircle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #dadce0;
+}
+
+.optionInput {
+    border: none;
+    font-size: 14px;
+    width: 100%;
+    padding: 8px;
+    outline: none;
+}
+
+.optionInput:hover {
+    border-bottom: 1px solid #dadce0;
+}
+
+.optionInput:focus {
+    border-bottom: 2px solid #673ab7;
+}
+
+.addOptionBtn {
+    color: #673ab7;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px;
+    width: fit-content;
+}
+
+.addOptionBtn:hover {
+    background: #f3e5f5;
+    border-radius: 4px;
+}
+
+.actionBar {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #dadce0;
+    padding-top: 16px;
+    margin-top: 10px;
+}
+
+.iconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: #5f6368;
+}
+
+.iconButton:hover {
+    background-color: rgba(95, 99, 104, 0.1);
+}
+
+.mainActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.saveButton {
+    background-color: #673ab7;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.saveButton:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    background-color: #5e35b1;
+}

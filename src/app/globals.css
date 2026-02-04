@@ -500,7 +500,7 @@ body {
   font-weight: 300;
 }
 
-/* Specific Positions & Delays */
+/* Specific Positions & Delays (Right Side) */
 .float-1 {
   top: 20%;
   right: 10%;
@@ -519,12 +519,25 @@ body {
   animation-delay: 4s;
 }
 
-/* Add Responsive Check */
-@media (max-width: 1200px) {
-  .hero-visuals {
-    display: none;
-  }
+/* Specific Positions & Delays (Left Side) */
+.float-left-1 {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0.5s;
 }
+
+.float-left-2 {
+  top: 50%;
+  left: 5%;
+  animation-delay: 2.5s;
+}
+
+.float-left-3 {
+  bottom: 20%;
+  left: 12%;
+  animation-delay: 4.5s;
+}
+
 
 @keyframes floatCard {
 

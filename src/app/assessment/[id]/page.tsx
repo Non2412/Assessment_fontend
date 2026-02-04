@@ -98,59 +98,80 @@ export default function DoAssessmentPage() {
     }
 
     return (
-        <div className={styles.container}>
-            {/* Header */}
-            <div className={styles.headerCard}>
-                <div className={styles.iconWrapper}>{assessment.icon || '📝'}</div>
-                <h1 className={styles.title}>
-                    {assessment.title}
-                </h1>
-                <p className={styles.subtitle}>{assessment.subtitle || 'แบบประเมินออนไลน์'}</p>
-            </div>
-
-            {/* Assessment Form */}
-            {categories.map((category, index) => (
-                <div key={index} className={styles.categoryCard}>
-                    <h2 className={styles.categoryTitle}>
-                        {category.title}
-                    </h2>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                        {category.questions.map((q) => (
-                            <div key={q.id} className={styles.questionItem}>
-                                <p className={styles.questionText}>
-                                    {q.text}
-                                </p>
-                                <div className={styles.ratingGroup}>
-                                    {[1, 2, 3, 4, 5].map((score) => (
-                                        <button
-                                            key={score}
-                                            onClick={() => handleAnswerChange(q.id, score)}
-                                            className={`${styles.ratingBtn} ${answers[q.id] === score ? styles.ratingBtnActive : ''}`}
-                                        >
-                                            {score}
-                                        </button>
-                                    ))}
-                                </div>
-                                <div className={styles.labels}>
-                                    <span>ปรับปรุง</span>
-                                    <span>ดีมาก</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+        <>
+            {/* Floating Sidebar (Desktop Only) */}
+            <div className={styles.floatingSide}>
+                <div className={styles.floatingCard}>
+                    <div className={styles.floatingIcon}>📈</div>
+                    <h3 className={styles.cardTitle}>พัฒนาตนเอง</h3>
+                    <p className={styles.cardDesc}>เห็นจุดแข็งและจุดที่ต้องปรับปรุงของตัวเองได้อย่างชัดเจน</p>
                 </div>
-            ))}
-
-            {/* Submit Button */}
-            <div className={styles.submitSection}>
-                <button
-                    onClick={handleSubmit}
-                    className={styles.submitBtn}
-                >
-                    ส่งแบบประเมิน
-                </button>
+                <div className={styles.floatingCard}>
+                    <div className={styles.floatingIcon}>🏫</div>
+                    <h3 className={styles.cardTitle}>พัฒนาหลักสูตร</h3>
+                    <p className={styles.cardDesc}>ช่วยให้ทางโรงเรียนปรับปรุงการเรียนการสอนให้ดียิ่งขึ้น</p>
+                </div>
+                <div className={styles.floatingCard}>
+                    <div className={styles.floatingIcon}>🎁</div>
+                    <h3 className={styles.cardTitle}>รับสิทธิพิเศษ</h3>
+                    <p className={styles.cardDesc}>สะสมแต้มจากการประเมินเพื่อแลกของรางวัลมากมาย</p>
+                </div>
             </div>
-        </div>
+
+            <div className={styles.container}>
+                {/* Header */}
+                <div className={styles.headerCard}>
+                    <div className={styles.iconWrapper}>{assessment.icon || '📝'}</div>
+                    <h1 className={styles.title}>
+                        {assessment.title}
+                    </h1>
+                    <p className={styles.subtitle}>{assessment.subtitle || 'แบบประเมินออนไลน์'}</p>
+                </div>
+
+                {/* Assessment Form */}
+                {categories.map((category, index) => (
+                    <div key={index} className={styles.categoryCard}>
+                        <h2 className={styles.categoryTitle}>
+                            {category.title}
+                        </h2>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            {category.questions.map((q) => (
+                                <div key={q.id} className={styles.questionItem}>
+                                    <p className={styles.questionText}>
+                                        {q.text}
+                                    </p>
+                                    <div className={styles.ratingGroup}>
+                                        {[1, 2, 3, 4, 5].map((score) => (
+                                            <button
+                                                key={score}
+                                                onClick={() => handleAnswerChange(q.id, score)}
+                                                className={`${styles.ratingBtn} ${answers[q.id] === score ? styles.ratingBtnActive : ''}`}
+                                            >
+                                                {score}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className={styles.labels}>
+                                        <span>ปรับปรุง</span>
+                                        <span>ดีมาก</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+
+                {/* Submit Button */}
+                <div className={styles.submitSection}>
+                    <button
+                        onClick={handleSubmit}
+                        className={styles.submitBtn}
+                    >
+                        ส่งแบบประเมิน
+                    </button>
+                </div>
+            </div>
+        </>
     );
 }

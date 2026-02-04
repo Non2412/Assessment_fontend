@@ -67,27 +67,28 @@ export default function Home() {
               <span>เข้าใจตัวเองอย่างถ่องแท้</span>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Info Section (Below Scroll) */}
-      <div className="info-section">
-        <h2 className="section-title">ทำไมต้องประเมิน?</h2>
-        <div className="info-grid">
-          <div className="info-card">
-            <span className="info-icon">📈</span>
-            <h3>พัฒนาตนเอง</h3>
-            <p>เห็นจุดแข็งและจุดที่ต้องปรับปรุงของตัวเองได้อย่างชัดเจน</p>
+          {/* Floating Visuals (Left Side - New) */}
+          <div className="floating-card float-left-1">
+            <span className="float-icon icon-yellow">📈</span>
+            <div className="float-text">
+              <strong>พัฒนาตนเอง</strong>
+              <span>ปรับปรุงตัวเองได้ชัดเจน</span>
+            </div>
           </div>
-          <div className="info-card">
-            <span className="info-icon">🏫</span>
-            <h3>พัฒนาหลักสูตร</h3>
-            <p>ช่วยให้ทางโรงเรียนปรับปรุงการเรียนการสอนให้ดียิ่งขึ้น</p>
+          <div className="floating-card float-left-2">
+            <span className="float-icon icon-red">🏫</span>
+            <div className="float-text">
+              <strong>พัฒนาหลักสูตร</strong>
+              <span>ช่วยปรับปรุงการเรียนการสอน</span>
+            </div>
           </div>
-          <div className="info-card">
-            <span className="info-icon">🎁</span>
-            <h3>รับสิทธิพิเศษ</h3>
-            <p>สะสมแต้มจากการประเมินเพื่อแลกของรางวัลมากมาย</p>
+          <div className="floating-card float-left-3">
+            <span className="float-icon icon-pink">🎁</span>
+            <div className="float-text">
+              <strong>รับสิทธิพิเศษ</strong>
+              <span>แลกของรางวัลมากมาย</span>
+            </div>
           </div>
         </div>
       </div>

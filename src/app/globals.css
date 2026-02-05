@@ -204,6 +204,47 @@ body {
   border-top: 1px solid #f1f5f9;
 }
 
+.login-btn-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #10b981;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.login-btn-sidebar:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+
+.logout-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 5px;
+}
+
+.logout-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fef2f2;
+}
+
 .user-profile-card {
   display: flex;
   align-items: center;

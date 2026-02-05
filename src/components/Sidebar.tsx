@@ -1,9 +1,30 @@
 "use client";
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter(); // Need to import useRouter
+    const [user, setUser] = useState<any>(null); // Need to import useState
+
+    useEffect(() => {
+        // Check for user in localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                console.error("Error parsing user data", e);
+            }
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        setUser(null);
+        router.push('/login');
+    };
 
     const isActive = (path: string) => pathname === path ? 'active' : '';
 
@@ -38,35 +59,37 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-bottom-profile">
-                {/* User Profile */}
-                <div className="user-profile-card">
-                    <div className="avatar-wrapper">
-                        <div className="user-avatar-lg">N</div>
-                        <div className="avatar-status"></div>
-                    </div>
-                    <div className="user-info">
-                        <p className="user-name">นักเรียน</p>
-                        <p className="user-role">Student</p>
-                    </div>
-                </div>
+                {user ? (
+                    <>
+                        {/* User Profile */}
+                        <div className="user-profile-card">
+                            <div className="avatar-wrapper">
+                                <div className="user-avatar-lg">{user.username ? user.username.charAt(0).toUpperCase() : 'U'}</div>
+                                <div className="avatar-status"></div>
+                            </div>
+                            <div className="user-info">
+                                <p className="user-name">{user.username || 'User'}</p>
+                                <p className="user-role">{user.role || 'Member'}</p>
+                            </div>
+                        </div>
 
-                {/* Vertical Stats Links */}
-                <div className="profile-stats">
-                    <div className="p-stat-row">
-                        <span className="p-icon">🛍️</span>
-                        <span className="p-text">แบบประเมินที่ทำแล้ว: 3</span>
-                        <span className="status-dot green"></span>
-                    </div>
-                    <div className="p-stat-row">
-                        <span className="p-icon">🏆</span>
-                        <span className="p-text">รอประเมิน: 1</span>
-                        <span className="status-dot light-green">+</span>
-                    </div>
-                    <div className="p-stat-row">
-                        <span className="status-dot green"></span>
-                        <span className="p-text">Online</span>
-                    </div>
-                </div>
+                        {/* Vertical Stats Links */}
+                        <div className="profile-stats">
+                            <div className="p-stat-row">
+                                <span className="p-icon">🛍️</span>
+                                <span className="p-text">ประเมินแล้ว: 3</span>
+                                <span className="status-dot green"></span>
+                            </div>
+                            <button onClick={handleLogout} className="logout-btn">
+                                ออกจากระบบ
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <Link href="/login" className="login-btn-sidebar">
+                        <span>🔐</span> เข้าสู่ระบบ
+                    </Link>
+                )}
             </div>
         </aside>
     );

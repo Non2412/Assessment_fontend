@@ -62,8 +62,17 @@ export default function DoAssessmentPage() {
         }
     ];
 
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
+
     useEffect(() => {
         if (!params?.id) return;
+
+        // Check completion status
+        const completedList = JSON.parse(localStorage.getItem('completed_assessments') || '[]');
+        if (completedList.includes(params.id)) {
+            setIsCompleted(true);
+        }
 
         const saved = localStorage.getItem('assessment_forms');
         if (saved) {
@@ -84,9 +93,43 @@ export default function DoAssessmentPage() {
 
     const handleSubmit = () => {
         if (!assessment) return;
-        alert(`ส่งแบบประเมิน "${assessment.title}" เรียบร้อยแล้ว!\nขอบคุณสำหรับความคิดเห็น (Mock Submission)`);
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirmSubmit = () => {
+        setIsConfirmOpen(false);
+
+        // Save completion status
+        if (params?.id) {
+            const completedList = JSON.parse(localStorage.getItem('completed_assessments') || '[]');
+            if (!completedList.includes(params.id)) {
+                completedList.push(params.id);
+                localStorage.setItem('completed_assessments', JSON.stringify(completedList));
+            }
+        }
+
+        // Mock submission
         router.push('/assessment');
     };
+
+    if (isCompleted) {
+        return (
+            <div className={styles.container} style={{ textAlign: 'center', paddingTop: '100px' }}>
+                <div style={{ fontSize: '80px', marginBottom: '20px' }}>✅</div>
+                <h1 style={{ color: '#10b981', marginBottom: '16px' }}>คุณได้ทำการประเมินไปแล้ว</h1>
+                <p style={{ color: '#64748b', fontSize: '18px', marginBottom: '32px' }}>
+                    ขอบคุณที่ให้ความร่วมมือในการตอบแบบประเมิน
+                </p>
+                <button
+                    onClick={() => router.push('/assessment')}
+                    className={styles.submitBtn}
+                    style={{ padding: '12px 32px', fontSize: '16px' }}
+                >
+                    กลับไปหน้าแบบประเมิน
+                </button>
+            </div>
+        );
+    }
 
     if (!assessment) {
         return (
@@ -142,15 +185,35 @@ export default function DoAssessmentPage() {
                                         {q.text}
                                     </p>
                                     <div className={styles.ratingGroup}>
-                                        {[1, 2, 3, 4, 5].map((score) => (
-                                            <button
-                                                key={score}
-                                                onClick={() => handleAnswerChange(q.id, score)}
-                                                className={`${styles.ratingBtn} ${answers[q.id] === score ? styles.ratingBtnActive : ''}`}
-                                            >
-                                                {score}
-                                            </button>
-                                        ))}
+                                        {[1, 2, 3, 4, 5].map((score) => {
+                                            // Check if this score is already taken by another question in this category
+                                            const isTaken = category.questions.some(otherQ =>
+                                                otherQ.id !== q.id && answers[otherQ.id] === score
+                                            );
+
+                                            // If taken by another question, it should be disabled (unless it's THIS question's current answer)
+                                            const disabled = isTaken;
+
+                                            return (
+                                                <button
+                                                    key={score}
+                                                    onClick={() => !disabled && handleAnswerChange(q.id, score)}
+                                                    disabled={disabled}
+                                                    className={`
+                                                        ${styles.ratingBtn} 
+                                                        ${answers[q.id] === score ? styles.ratingBtnActive : ''}
+                                                    `}
+                                                    style={{
+                                                        opacity: disabled ? 0.3 : 1,
+                                                        cursor: disabled ? 'not-allowed' : 'pointer',
+                                                        background: disabled ? '#f1f5f9' : undefined
+                                                    }}
+                                                    title={disabled ? 'คะแนนนี้ถูกเลือกไปแล้วในหมวดหมู่นี้' : ''}
+                                                >
+                                                    {score}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                     <div className={styles.labels}>
                                         <span>ปรับปรุง</span>
@@ -172,6 +235,34 @@ export default function DoAssessmentPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Confirmation Modal */}
+            {isConfirmOpen && (
+                <div className={styles.modalOverlay} onClick={() => setIsConfirmOpen(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <span className={styles.modalIcon}>🤔</span>
+                        <h3 className={styles.modalTitle}>ยืนยันการส่งแบบประเมิน?</h3>
+                        <p className={styles.modalDesc}>
+                            คุณตรวจสอบข้อมูลครบถ้วนแล้วใช่หรือไม่?<br />
+                            เมื่อส่งแล้วจะไม่สามารถแก้ไขได้
+                        </p>
+                        <div className={styles.modalButtons}>
+                            <button
+                                className={styles.modalBtnCancel}
+                                onClick={() => setIsConfirmOpen(false)}
+                            >
+                                ยกเลิก
+                            </button>
+                            <button
+                                className={styles.modalBtnConfirm}
+                                onClick={handleConfirmSubmit}
+                            >
+                                ยืนยัน
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

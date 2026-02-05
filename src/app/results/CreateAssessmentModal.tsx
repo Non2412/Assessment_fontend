@@ -75,33 +75,33 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
     return (
         <div className={modalStyles.modalOverlay} onClick={handleClose}>
             <div className={modalStyles.modalContent} onClick={(e) => e.stopPropagation()}>
-                <div className={formStyles.container} style={{ margin: 0, minHeight: '550px' }}>
+                <div className={formStyles.container} style={{ margin: 0, minHeight: '550px', paddingTop: '80px' }}>
 
-                    {/* Close Button (Top Right) */}
+                    {/* Back Button (Top Left) */}
                     <button
                         onClick={handleClose}
                         style={{
                             position: 'absolute',
                             top: '20px',
-                            right: '20px',
-                            background: 'rgba(255,255,255,0.5)',
+                            left: '20px',
+                            background: 'transparent',
                             border: 'none',
-                            borderRadius: '50%',
-                            width: '40px',
-                            height: '40px',
-                            fontSize: '18px',
+                            fontSize: '16px',
+                            fontWeight: '600',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            gap: '8px',
                             color: '#1a2e05',
-                            transition: 'background 0.2s',
-                            zIndex: 10
+                            zIndex: 10,
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            transition: 'background 0.2s'
                         }}
-                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.8)'}
-                        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.5)'}
+                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.4)'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                     >
-                        ✕
+                        <span>←</span> Back
                     </button>
 
                     {/* Left Column: Form Inputs */}

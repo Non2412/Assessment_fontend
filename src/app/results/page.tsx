@@ -6,7 +6,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import PublishConfirmationModal from './PublishConfirmationModal';
 
 export default function CreateAssessmentPage() {
-  const [filter, setFilter] = useState('owned-me');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [publishingId, setPublishingId] = useState<number | null>(null);
@@ -149,24 +149,6 @@ export default function CreateAssessmentPage() {
       <section className={styles.recentForms}>
         <div className={styles.recentHeader}>
           <h2 className={styles.sectionHeading}>แบบฟอร์มล่าสุด</h2>
-
-          <div className={styles.recentActions}>
-            <select
-              className={styles.ownerFilter}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="owned-me">ของทุกคน</option>
-              <option value="owned-anyone">ฉันเป็นเจ้าของ</option>
-              <option value="not-owned-me">ไม่ได้เป็นเจ้าของ</option>
-            </select>
-
-            <div className={styles.displayOptions}>
-              <button className={styles.iconBtn}>▦</button>
-              <button className={styles.iconBtn}>AZ</button>
-              <button className={styles.iconBtn}>📁</button>
-            </div>
-          </div>
         </div>
 
         <div className={styles.formsGrid}>

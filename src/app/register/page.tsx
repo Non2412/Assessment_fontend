@@ -13,6 +13,7 @@ export default function RegisterPage() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -57,9 +58,19 @@ export default function RegisterPage() {
                 throw new Error(data.message || 'เกิดข้อผิดพลาด');
             }
 
-            // Success
-            alert('สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ');
-            router.push('/login'); // Redirect to login page
+            // Auto Login after Register
+            const userSession = {
+                id: data.userId,
+                username: formData.username,
+                role: 'student' // Default role
+            };
+            localStorage.setItem('user', JSON.stringify(userSession));
+
+            // Trigger Sidebar update
+            window.dispatchEvent(new Event('auth-change'));
+
+            // Success View
+            setSuccess(true);
 
         } catch (err: any) {
             setError(err.message);
@@ -67,6 +78,24 @@ export default function RegisterPage() {
             setLoading(false);
         }
     };
+
+    if (success) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.card}>
+                    <div className={styles.successView}>
+                        <div className={styles.successIcon}>🎉</div>
+                        <h1 className={styles.title} style={{ color: '#10b981' }}>สมัครสมาชิกสำเร็จ!</h1>
+                        <p className={styles.subtitle}>บัญชีของคุณพร้อมใช้งานแล้ว</p>
+
+                        <Link href="/login" className={styles.submitBtn} style={{ textDecoration: 'none', display: 'inline-block', width: '100%' }}>
+                            ไปที่หน้าเข้าสู่ระบบ
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

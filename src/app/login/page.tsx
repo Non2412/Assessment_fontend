@@ -43,6 +43,9 @@ export default function LoginPage() {
             // Success - Store mock token or handle auth state
             localStorage.setItem('user', JSON.stringify(data.user));
 
+            // Trigger Sidebar update
+            window.dispatchEvent(new Event('auth-change'));
+
             // Redirect to home
             router.push('/');
 

@@ -6,29 +6,58 @@ import { useState, useEffect } from 'react';
 export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter(); // Need to import useRouter
-    const [user, setUser] = useState<any>(null); // Need to import useState
+    const [user, setUser] = useState<any>(null);
+    const [completedCount, setCompletedCount] = useState(0);
 
-    useEffect(() => {
-        // Check for user in localStorage
+    const checkUser = () => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
-                setUser(JSON.parse(storedUser));
+                const userData = JSON.parse(storedUser);
+                setUser(userData);
+
+                // Check completed count for this user
+                const userId = userData.id || userData.username;
+                const storageKey = `completed_assessments_${userId}`;
+                const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                setCompletedCount(completedList.length);
+
             } catch (e) {
                 console.error("Error parsing user data", e);
+                setUser(null);
+                setCompletedCount(0);
             }
+        } else {
+            setUser(null);
+            setCompletedCount(0);
         }
+    };
+
+    useEffect(() => {
+        checkUser();
+        window.addEventListener('auth-change', checkUser);
+        window.addEventListener('storage', checkUser); // Also listen for cross-tab storage changes
+        return () => {
+            window.removeEventListener('auth-change', checkUser);
+            window.removeEventListener('storage', checkUser);
+        };
     }, []);
+
+    // Re-check on navigation
+    useEffect(() => {
+        checkUser();
+    }, [pathname]);
 
     const handleLogout = () => {
         localStorage.removeItem('user');
         setUser(null);
+        window.dispatchEvent(new Event('auth-change'));
         router.push('/login');
     };
 
     const isActive = (path: string) => pathname === path ? 'active' : '';
 
-    const completedCount = 0; // Mock data for completed assessments
+
 
     return (
         <aside className="sidebar">
@@ -77,7 +106,7 @@ export default function Sidebar() {
                         <div className="profile-stats">
                             <div className="p-stat-row">
                                 <span className="p-icon">🛍️</span>
-                                <span className="p-text">ประเมินแล้ว: 3</span>
+                                <span className="p-text">ประเมินแล้ว: {completedCount}</span>
                                 <span className="status-dot green"></span>
                             </div>
                             <button onClick={handleLogout} className="logout-btn">

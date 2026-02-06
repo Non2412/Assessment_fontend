@@ -68,18 +68,69 @@ export default function DoAssessmentPage() {
     useEffect(() => {
         if (!params?.id) return;
 
-        // Check completion status
-        const completedList = JSON.parse(localStorage.getItem('completed_assessments') || '[]');
+        // Get current user ID
+        const userStr = localStorage.getItem('user');
+        let userId = 'guest';
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                userId = user.id || user.username;
+            } catch (e) { }
+        }
+
+        // Check completion status using user-specific key
+        const storageKey = `completed_assessments_${userId}`;
+        const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
         if (completedList.includes(params.id)) {
             setIsCompleted(true);
         }
 
-        const saved = localStorage.getItem('assessment_forms');
+        // Form loading logic...
+        const formsKey = `assessment_forms_${userId}`;
+        let saved = localStorage.getItem(formsKey);
+
+        let found = null;
+
+        // 1. Try user specific forms
         if (saved) {
-            const forms = JSON.parse(saved);
-            const found = forms.find((f: any) => f.id.toString() === params.id);
-            if (found) {
-                setAssessment(found);
+            try {
+                const forms = JSON.parse(saved);
+                if (Array.isArray(forms)) {
+                    found = forms.find((f: any) => f.id.toString() === params.id);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // 2. Fallback to global forms if needed
+        if (!found) {
+            const globalSaved = localStorage.getItem('assessment_forms');
+            if (globalSaved) {
+                try {
+                    const forms = JSON.parse(globalSaved);
+                    if (Array.isArray(forms)) {
+                        found = forms.find((f: any) => f.id.toString() === params.id);
+                    }
+                } catch (e) { console.error(e); }
+            }
+        }
+
+        // 3. Set or Mock
+        if (found) {
+            setAssessment(found);
+        } else {
+            // Mock default data for demo if nothing found
+            if (params.id === '1') {
+                setAssessment({
+                    id: 1, title: 'แบบประเมินความพึงพอใจ', subtitle: 'Web Development', icon: '📝'
+                });
+            } else {
+                // Explicit fallback for ANY id to prevent infinite loading
+                setAssessment({
+                    id: params.id,
+                    title: 'แบบประเมินทั่วไป',
+                    subtitle: 'แบบฟอร์มมาตรฐาน',
+                    icon: '📄'
+                });
             }
         }
     }, [params?.id]);
@@ -101,10 +152,22 @@ export default function DoAssessmentPage() {
 
         // Save completion status
         if (params?.id) {
-            const completedList = JSON.parse(localStorage.getItem('completed_assessments') || '[]');
+            // Get current user ID
+            const userStr = localStorage.getItem('user');
+            let userId = 'guest';
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    userId = user.id || user.username;
+                } catch (e) { }
+            }
+
+            const storageKey = `completed_assessments_${userId}`;
+            const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
             if (!completedList.includes(params.id)) {
                 completedList.push(params.id);
-                localStorage.setItem('completed_assessments', JSON.stringify(completedList));
+                localStorage.setItem(storageKey, JSON.stringify(completedList));
             }
         }
 

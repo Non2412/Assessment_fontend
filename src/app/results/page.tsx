@@ -11,28 +11,57 @@ export default function CreateAssessmentPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [publishingId, setPublishingId] = useState<number | null>(null);
 
-  // State for forms list to support adding new drafts
+  // State for forms list
   const [recentForms, setRecentForms] = useState<any[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load from LocalStorage on mount
+  // Load User and Forms on mount
   React.useEffect(() => {
-    const saved = localStorage.getItem('assessment_forms');
+    // Get current user
+    const userStr = localStorage.getItem('user');
+    let userId = 'guest';
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setCurrentUser(user);
+        userId = user.id || user.username;
+      } catch (e) {
+        console.error('Error parsing user', e);
+      }
+    }
+
+    // Load forms for this specific user
+    const storageKey = `assessment_forms_${userId}`;
+    const saved = localStorage.getItem(storageKey);
+
     if (saved) {
       setRecentForms(JSON.parse(saved));
     } else {
-      // Default initial data if empty
-      setRecentForms([
-        { id: 1, title: 'แบบประเมินความพึงพอใจ', subtitle: 'Web Development', icon: '📝', isDraft: false, isPublished: false }
-      ]);
+      setRecentForms([]); // Start empty for new users
     }
+    setIsLoaded(true);
   }, []);
 
   // Save to LocalStorage whenever forms change
   React.useEffect(() => {
-    if (recentForms.length > 0) {
-      localStorage.setItem('assessment_forms', JSON.stringify(recentForms));
+    if (!isLoaded) return;
+
+    const userStr = localStorage.getItem('user');
+    let userId = 'guest';
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        userId = user.id || user.username;
+      } catch (e) { }
     }
-  }, [recentForms]);
+
+    const storageKey = `assessment_forms_${userId}`;
+
+    // Only save if we have data or if we want to persist the empty state
+    localStorage.setItem(storageKey, JSON.stringify(recentForms));
+  }, [recentForms, isLoaded]);
+
 
   // Track which form is being edited (if any)
   const [editingForm, setEditingForm] = useState<any>(null);

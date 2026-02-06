@@ -87,99 +87,52 @@ export default function DoAssessmentPage() {
             setIsCompleted(true);
         }
 
-        // Form loading logic...
-        const formsKey = `assessment_forms_${userId}`;
-        let saved = localStorage.getItem(formsKey);
-
-        let found = null;
-
-        // 1. Try user specific forms
-        if (saved) {
+        const fetchAssessment = async () => {
             try {
-                const forms = JSON.parse(saved);
-                if (Array.isArray(forms)) {
-                    found = forms.find((f: any) => f.id.toString() === params.id);
-                }
-            } catch (e) { console.error(e); }
-        }
+                const res = await fetch(`/api/assessments/${params.id}`);
+                if (res.ok) {
+                    const data = await res.json();
 
-        // 2. Fallback to global forms if needed
-        if (!found) {
-            const globalSaved = localStorage.getItem('assessment_forms');
-            if (globalSaved) {
-                try {
-                    const forms = JSON.parse(globalSaved);
-                    if (Array.isArray(forms)) {
-                        found = forms.find((f: any) => f.id.toString() === params.id);
+                    // Handle PDF Data URL
+                    let fileUrl = null;
+                    if (data.fileData) {
+                        // Check if it already has header, if not add it (assuming PDF)
+                        // Actually my API saves just the string usually, I need to check how I implemented save
+                        // In CreateAssessmentModal, I saved filtered result of FileReader which usually includes "data:application/pdf;base64,..."
+                        // So I can use it directly.
+                        fileUrl = data.fileData;
                     }
-                } catch (e) { console.error(e); }
+
+                    setAssessment({
+                        ...data,
+                        fileUrl: fileUrl,
+                        // Ensure defaults
+                        abstract: data.abstract || 'ไม่มีบทคัดย่อ',
+                        scope: data.scope || 'ไม่มีขอบเขตระบุ',
+                        author: data.author || 'ผู้จัดทำ'
+                    });
+                } else {
+                    // Fallback to Mock ONLY if strictly ID=1 and not found in DB
+                    if (params.id === '1') {
+                        setAssessment({
+                            id: 1,
+                            title: 'ระบบบริหารจัดการการเรียนรู้ (LMS)',
+                            subtitle: 'Web Application Development',
+                            icon: '💻',
+                            author: 'นายศรราม เทพพิทักษ์ (รหัสนักศึกษา 640101)\nนางสาวสมหญิง จริงใจ (รหัสนักศึกษา 640102)',
+                            abstract: 'โครงงานนี้จัดทำขึ้นเพื่อศึกษาระบบการจัดการเรียนการสอน (LMS) โดยมีวัตถุประสงค์เพื่ออำนวยความสะดวกให้กับผู้สอนและผู้เรียนในการเข้าถึงเนื้อหาการเรียนรู้ การส่งงาน และการวัดผลประเมินผล ผ่านระบบเครือข่ายอินเทอร์เน็ต',
+                            scope: '1. ระบบจัดการสมาชิก (Authentication)\n2. ระบบจัดการรายวิชา (Course Management)\n3. ระบบแบบทดสอบออนไลน์ (Quiz System)\n4. ระบบส่งงานและตรวจงาน (Assignment Submission)',
+                            description: 'โปรดอ่านเอกสารโครงการฉบับย่อด้านขวามือก่อนเริ่มทำแบบประเมิน',
+                            fullContent: `(Mock Content)...`
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading assessment", error);
             }
-        }
+        };
 
-        // 3. Set or Mock
-        if (found) {
-            setAssessment({
-                ...found,
-                // Ensure these fields exist if not in found
-                abstract: found.abstract || 'โครงงานนี้มุ่งเน้นการศึกษาและพัฒนา...',
-                scope: found.scope || '1. ศึกษาข้อมูล\n2. ออกแบบระบบ\n3. พัฒนาโปรแกรม',
-                author: found.author || 'ผู้จัดทำโครงงาน',
-                fullContent: found.fullContent || 'เนื้อหาเอกสาร...'
-            });
-        } else {
-            // Mock default data
-            if (params.id === '1') {
-                setAssessment({
-                    id: 1,
-                    title: 'ระบบบริหารจัดการการเรียนรู้ (LMS)',
-                    subtitle: 'Web Application Development',
-                    icon: '💻',
-                    author: 'นายศรราม เทพพิทักษ์ (รหัสนักศึกษา 640101)\nนางสาวสมหญิง จริงใจ (รหัสนักศึกษา 640102)',
-                    abstract: 'โครงงานนี้จัดทำขึ้นเพื่อศึกษาระบบการจัดการเรียนการสอน (LMS) โดยมีวัตถุประสงค์เพื่ออำนวยความสะดวกให้กับผู้สอนและผู้เรียนในการเข้าถึงเนื้อหาการเรียนรู้ การส่งงาน และการวัดผลประเมินผล ผ่านระบบเครือข่ายอินเทอร์เน็ต',
-                    scope: '1. ระบบจัดการสมาชิก (Authentication)\n2. ระบบจัดการรายวิชา (Course Management)\n3. ระบบแบบทดสอบออนไลน์ (Quiz System)\n4. ระบบส่งงานและตรวจงาน (Assignment Submission)',
-                    description: 'โปรดอ่านเอกสารโครงการฉบับย่อด้านขวามือก่อนเริ่มทำแบบประเมิน',
-                    fullContent: `
-บทที่ 1
-บทนำ
-
-1.1 ที่มาและความสำคัญของโครงงาน
-     ในยุคปัจจุบัน เทคโนโลยีสารสนเทศเข้ามามีบทบาทสำคัญในการดำรงชีวิตประจำวัน รวมถึงด้านการศึกษา... (เนื้อหาจำลอง)
-
-1.2 วัตถุประสงค์
-     1. เพื่อพัฒนาเว็บแอปพลิเคชันสำหรับการจัดการเรียนการสอน
-     2. เพื่อศึกษาการใช้งาน Framework Next.js และ Database MongoDB
-     3. เพื่ออำนวยความสะดวกในการเรียนรู้ของผู้เรียน
-
-1.3 ขอบเขตของโครงงาน
-     1.3.1 ด้านผู้ดูแลระบบ (Admin)
-           - สามารถจัดการรายวิชา เพิ่ม/ลบ/แก้ไข ข้อมูลรายวิชาได้
-           - จัดการผู้ใช้งานในระบบ
-     1.3.2 ด้านผู้สอน (Instructor)
-           - สร้างเนื้อหาบทเรียนและอัปโหลดเอกสารประกอบการสอนได้
-           - สร้างแบบทดสอบและเฉลยได้
-     1.3.3 ด้านผู้เรียน (Student)
-           - เข้าเรียนตามรายวิชาที่ลงทะเบียน
-           - ทำแบบทดสอบและดูคะแนนได้
-
-1.4 ประโยชน์ที่คาดว่าจะได้รับ
-     1. ได้ระบบต้นแบบที่สามารถนำไปใช้งานจริงได้ในระดับภาควิชา
-     2. ผู้พัฒนาได้รับความรู้ความเข้าใจในการพัฒนา Web Application แบบ Full Stack
-                    `
-                });
-            } else {
-                setAssessment({
-                    id: params.id,
-                    title: 'แอปพลิเคชันจองห้องประชุม',
-                    subtitle: 'Mobile Application',
-                    icon: '📱',
-                    author: 'นายสมชาย รักดี',
-                    abstract: 'แอปพลิเคชันสำหรับจองห้องประชุมภายในองค์กร ช่วยลดปัญหาการจองห้องซ้ำซ้อนและเพิ่มความสะดวกในการตรวจสอบสถานะห้องว่าง',
-                    scope: '1. ระบบจองห้อง\n2. ระบบปฏิทิน\n3. ระบบแจ้งเตือน',
-                    description: 'กรุณาศึกษาขอบเขตงานก่อนประเมิน',
-                    fullContent: `บทคัดย่อ\n\nโครงงานนี้เป็นส่วนหนึ่งของวิชา Project...`
-                });
-            }
-        }
+        fetchAssessment();
     }, [params?.id]);
 
     const handleAnswerChange = (questionId: string, value: number) => {
@@ -284,13 +237,25 @@ export default function DoAssessmentPage() {
 
                 {/* Right: Document Viewer */}
                 <main className={introStyles.introMain}>
-                    <div className={introStyles.documentViewer}>
-                        <div className={introStyles.paperPage}>
-                            <h1 className={introStyles.paperTitle}>{assessment.title}</h1>
-                            <div className={introStyles.paperContent} style={{ whiteSpace: 'pre-wrap' }}>
-                                {assessment.fullContent || assessment.description}
-                                {`
-                                
+                    <div className={introStyles.documentViewer} style={{ padding: assessment.fileUrl ? '0' : '40px', overflow: 'hidden' }}>
+                        {assessment.fileUrl ? (
+                            /* Real PDF Viewer */
+                            <iframe
+                                src={assessment.fileUrl}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 'none', display: 'block' }}
+                                title="Project Document"
+                            />
+                        ) : (
+                            /* Mock Text Content (Fallback) */
+                            <>
+                                <div className={introStyles.paperPage}>
+                                    <h1 className={introStyles.paperTitle}>{assessment.title}</h1>
+                                    <div className={introStyles.paperContent} style={{ whiteSpace: 'pre-wrap' }}>
+                                        {assessment.fullContent || assessment.description}
+                                        {`
+                                            
 ------------------------------------------------
 (จำลองเอกสาร PDF หน้า 1)
 ------------------------------------------------
@@ -303,21 +268,23 @@ export default function DoAssessmentPage() {
 
 ปีการศึกษา:
 2568
-                                `}
-                            </div>
-                        </div>
+                                            `}
+                                    </div>
+                                </div>
 
-                        <div className={introStyles.paperPage}>
-                            <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>เนื้อหาเพิ่มเติม (หน้า 2)</h2>
-                            <p>
-                                2.1 ทฤษฎีที่เกี่ยวข้อง
-                                ในการพัฒนาโครงงานนี้ ผู้จัดทำได้ศึกษาทฤษฎีและเทคโนโลยีต่าง ๆ ดังนี้...
-                            </p>
-                            <p>
-                                (พื้นที่สำหรับเนื้อหาเพิ่มเติมที่สามารถเลื่อนอ่านได้...)
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                            </p>
-                        </div>
+                                <div className={introStyles.paperPage}>
+                                    <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>เนื้อหาเพิ่มเติม (หน้า 2)</h2>
+                                    <p>
+                                        2.1 ทฤษฎีที่เกี่ยวข้อง
+                                        ในการพัฒนาโครงงานนี้ ผู้จัดทำได้ศึกษาทฤษฎีและเทคโนโลยีต่าง ๆ ดังนี้...
+                                    </p>
+                                    <p>
+                                        (พื้นที่สำหรับเนื้อหาเพิ่มเติมที่สามารถเลื่อนอ่านได้...)
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                    </p>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Action Bar */}
@@ -325,9 +292,15 @@ export default function DoAssessmentPage() {
                         <div style={{ marginRight: 'auto', fontSize: '14px', color: '#64748b' }}>
                             อ่านเอกสารครบถ้วนแล้ว?
                         </div>
-                        <button className={introStyles.downloadBtn} onClick={() => alert('ดาวน์โหลดเอกสารจำลองเรียบร้อย!')}>
+                        <a
+                            href={assessment.fileUrl || '#'}
+                            download={assessment.fileUrl ? "project_document.pdf" : undefined}
+                            className={introStyles.downloadBtn}
+                            style={{ textDecoration: 'none' }}
+                            onClick={(e) => !assessment.fileUrl && e.preventDefault()}
+                        >
                             📥 ดาวน์โหลดเอกสาร
-                        </button>
+                        </a>
                         <button className={introStyles.startBtn} onClick={() => setIsStarted(true)}>
                             เริ่มทำแบบประเมิน <span>→</span>
                         </button>
@@ -398,9 +371,9 @@ export default function DoAssessmentPage() {
                                                     onClick={() => !disabled && handleAnswerChange(q.id, score)}
                                                     disabled={disabled}
                                                     className={`
-                                                        ${styles.ratingBtn} 
-                                                        ${answers[q.id] === score ? styles.ratingBtnActive : ''}
-                                                    `}
+                                                            ${styles.ratingBtn} 
+                                                            ${answers[q.id] === score ? styles.ratingBtnActive : ''}
+                                                        `}
                                                     style={{
                                                         opacity: disabled ? 0.3 : 1,
                                                         cursor: disabled ? 'not-allowed' : 'pointer',

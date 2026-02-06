@@ -4,12 +4,13 @@ import formStyles from './create/style.module.css';
 import modalStyles from './modal.module.css';
 
 interface FormData {
-    id?: number;
+    id?: number | string;
     title: string;
     author?: string;
     scope: string;
     abstract: string;
     file: File | null;
+    fileUrl?: string;
 }
 
 interface CreateAssessmentModalProps {
@@ -26,6 +27,10 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
     const [scope, setScope] = useState('');
     const [abstract, setAbstract] = useState('');
     const [file, setFile] = useState<File | null>(null);
+
+    // Notification State
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
 
     // Effect to load initial data when modal opens
     React.useEffect(() => {
@@ -66,14 +71,52 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
         onClose();
     };
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
+        // VALIDATION: Check if file is uploaded
+        if (!file) {
+            setNotificationMessage("กรุณาอัปโหลดไฟล์ PDF โครงงาน\nก่อนสร้างแบบประเมิน");
+            setShowNotification(true);
+            return;
+        }
+
+        // Convert file to Base64 for Database Storage
+        const toBase64 = (file: File) => new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        let base64String: string | undefined;
+        try {
+            const result = await toBase64(file);
+            console.log("File converted length:", result?.toString().length);
+            if (typeof result === 'string') {
+                base64String = result;
+            }
+        } catch (error) {
+            console.error("Error converting file to base64", error);
+            setNotificationMessage("เกิดข้อผิดพลาดในการแปลงไฟล์");
+            setShowNotification(true);
+            return;
+        }
+
+        // Create a URL for local preview (immediate feedback)
+        const fileUrl = URL.createObjectURL(file);
+
         onCreate({
             id: initialData?.id,
             title,
             author,
             scope,
             abstract,
-            file
+            file,
+            fileUrl,
+            // Pass the base64 data to the parent handler
+            // @ts-ignore - Adding dynamic property for backend
+            fileData: base64String,
+            fileName: file.name,
+            mimeType: file.type
         });
         onClose();
     };
@@ -210,6 +253,57 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
                     </div>
                 </div>
             </div>
+
+            {/* Custom Notification Modal */}
+            {showNotification && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2000,
+                    backdropFilter: 'blur(5px)',
+                    animation: 'fadeIn 0.2s ease-out'
+                }} onClick={() => setShowNotification(false)}>
+                    <div style={{
+                        background: 'white',
+                        padding: '30px 40px',
+                        borderRadius: '24px',
+                        textAlign: 'center',
+                        maxWidth: '400px',
+                        boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)',
+                        transform: 'scale(0.95)',
+                        animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
+                    }} onClick={e => e.stopPropagation()}>
+                        <div style={{ fontSize: '48px', marginBottom: '20px' }}>⚠️</div>
+                        <h3 style={{ margin: '0 0 10px 0', color: '#1e293b' }}>แจ้งเตือน</h3>
+                        <p style={{ color: '#64748b', whiteSpace: 'pre-line', marginBottom: '30px', lineHeight: '1.6' }}>
+                            {notificationMessage}
+                        </p>
+                        <button
+                            onClick={() => setShowNotification(false)}
+                            style={{
+                                background: '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                padding: '12px 30px',
+                                borderRadius: '12px',
+                                fontSize: '16px',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.3)'
+                            }}
+                        >
+                            ตกลง
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

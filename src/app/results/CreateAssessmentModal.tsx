@@ -6,6 +6,7 @@ import modalStyles from './modal.module.css';
 interface FormData {
     id?: number;
     title: string;
+    author?: string;
     scope: string;
     abstract: string;
     file: File | null;
@@ -21,6 +22,7 @@ interface CreateAssessmentModalProps {
 
 export default function CreateAssessmentModal({ isOpen, onClose, initialData, onSaveDraft, onCreate }: CreateAssessmentModalProps) {
     const [title, setTitle] = useState('');
+    const [author, setAuthor] = useState('');
     const [scope, setScope] = useState('');
     const [abstract, setAbstract] = useState('');
     const [file, setFile] = useState<File | null>(null);
@@ -29,12 +31,14 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
     React.useEffect(() => {
         if (isOpen && initialData) {
             setTitle(initialData.title);
+            setAuthor(initialData.author || '');
             setScope(initialData.scope);
             setAbstract(initialData.abstract);
             setFile(initialData.file);
         } else if (isOpen && !initialData) {
             // Reset if opening as new
             setTitle('');
+            setAuthor('');
             setScope('');
             setAbstract('');
             setFile(null);
@@ -54,6 +58,7 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
         onSaveDraft({
             id: initialData?.id, // Preserve ID if editing
             title,
+            author,
             scope,
             abstract,
             file
@@ -65,6 +70,7 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
         onCreate({
             id: initialData?.id,
             title,
+            author,
             scope,
             abstract,
             file
@@ -114,6 +120,18 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
                                 placeholder="รายละเอียด"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
+                            />
+                        </div>
+
+                        <div className={formStyles.fieldGroup}>
+                            <label className={formStyles.label}>ผู้จัดทำ (คนละบรรทัด)</label>
+                            <textarea
+                                className={`${formStyles.textArea}`}
+                                style={{ minHeight: '80px', height: 'auto' }}
+                                placeholder="นาย ก (64xxxx)&#10;นางสาว ข (64xxxx)"
+                                value={author}
+                                onChange={(e) => setAuthor(e.target.value)}
+                                rows={3}
                             />
                         </div>
 

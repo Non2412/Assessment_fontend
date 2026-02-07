@@ -4,12 +4,12 @@ import formStyles from './create/style.module.css';
 import modalStyles from './modal.module.css';
 
 interface FormData {
-    id?: number | string;
+    id?: string;
     title: string;
     author?: string;
     scope: string;
     abstract: string;
-    file: File | null;
+    file?: File | null;
     fileUrl?: string;
 }
 
@@ -39,7 +39,7 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
             setAuthor(initialData.author || '');
             setScope(initialData.scope);
             setAbstract(initialData.abstract);
-            setFile(initialData.file);
+            setFile(initialData.file || null);
         } else if (isOpen && !initialData) {
             // Reset if opening as new
             setTitle('');
@@ -113,7 +113,7 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
             file,
             fileUrl,
             // Pass the base64 data to the parent handler
-            // @ts-ignore - Adding dynamic property for backend
+            // @ts-expect-error - Adding dynamic property for backend
             fileData: base64String,
             fileName: file.name,
             mimeType: file.type

@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -61,9 +62,16 @@ export default function Sidebar() {
 
     return (
         <aside className="sidebar">
-            <div className="sidebar-header">
-                <div className="logo-icon">📊</div>
-                <span className="logo-text">Assessment</span>
+            <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                <NextImage
+                    src="/logo.jpg"
+                    alt="Assessment Logo"
+                    width={220}
+                    height={100}
+                    style={{ objectFit: 'contain', maxWidth: '100%', height: 'auto' }}
+                    priority
+                    quality={100}
+                />
             </div>
 
             <nav className="sidebar-nav">

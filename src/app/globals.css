@@ -204,6 +204,47 @@ body {
   border-top: 1px solid #f1f5f9;
 }
 
+.login-btn-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #10b981;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.login-btn-sidebar:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+
+.logout-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 5px;
+}
+
+.logout-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fef2f2;
+}
+
 .user-profile-card {
   display: flex;
   align-items: center;
@@ -318,7 +359,8 @@ body {
 
 /* Hero Banner with Pattern */
 .hero-banner {
-  background: linear-gradient(135deg, #2D8EA1 0%, #17716f 100%);
+  /* Richer, deeper gradient */
+  background: linear-gradient(120deg, #0e7490 0%, #0f766e 50%, #0d9488 100%);
   border-radius: 20px;
   padding: 100px 40px;
   min-height: calc(100vh - 40px);
@@ -330,7 +372,7 @@ body {
   color: white;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(23, 113, 111, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(13, 148, 136, 0.4);
 }
 
 .hero-banner::before {
@@ -340,21 +382,24 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 30px 30px;
-  opacity: 0.3;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px),
+    radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px, 20px 20px;
+  background-position: 0 0, 10px 10px;
+  opacity: 0.4;
   pointer-events: none;
 }
 
 .hero-banner::after {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
-  animation: rotate 60s linear infinite;
+  top: -60%;
+  right: -60%;
+  width: 220%;
+  height: 220%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 65%);
+  animation: rotate 80s linear infinite;
   pointer-events: none;
   z-index: 1;
 }
@@ -371,26 +416,29 @@ body {
 
 /* Premium CTA Button */
 .hero-btn {
-  background: linear-gradient(90deg, #A855F7 0%, #EC4899 100%);
+  background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+  /* Pink gradient */
   color: white;
   border: none;
-  padding: 16px 40px;
+  padding: 18px 48px;
   border-radius: 50px;
-  font-size: 1.1em;
-  font-weight: 600;
+  font-size: 1.25em;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.5);
   position: relative;
   overflow: hidden;
+  letter-spacing: 0.5px;
 }
 
 .hero-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 30px -10px rgba(219, 39, 119, 0.6);
+  background: linear-gradient(135deg, #f68af3 0%, #be185d 100%);
 }
 
 .hero-btn::after {
@@ -422,63 +470,69 @@ body {
 
 .floating-card {
   position: absolute;
-  background: rgba(255, 255, 255, 0.08);
-  /* More transparent */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  /* More subtle border */
-  padding: 12px 20px;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  /* Slightly clearer */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 16px 24px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
-  gap: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  gap: 16px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  /* Inner glow */
   color: white;
-  min-width: 260px;
+  min-width: 280px;
   animation: floatCard 6s ease-in-out infinite;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .floating-card:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
   z-index: 20;
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .float-icon {
-  font-size: 1.5em;
-  background: rgba(255, 255, 255, 0.2);
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  /* Slightly softer radius */
+  font-size: 1.6em;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(5px);
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
-/* Icon Color Variants */
+/* Icon Color Variants - Enhanced */
 .float-icon.icon-yellow {
-  background: linear-gradient(135deg, rgba(253, 224, 71, 0.8) 0%, rgba(234, 179, 8, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
+  background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
 }
 
 .float-icon.icon-red {
-  background: linear-gradient(135deg, rgba(248, 113, 113, 0.8) 0%, rgba(239, 68, 68, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
 }
 
 .float-icon.icon-pink {
-  background: linear-gradient(135deg, rgba(244, 114, 182, 0.8) 0%, rgba(219, 39, 119, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.3);
+  background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 16px rgba(219, 39, 119, 0.3);
 }
 
 .float-text {
@@ -488,19 +542,21 @@ body {
 }
 
 .float-text strong {
-  font-size: 1em;
-  font-weight: 600;
-  margin-bottom: 2px;
-  letter-spacing: 0.5px;
+  font-size: 1.05em;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .float-text span {
-  font-size: 0.8em;
-  opacity: 0.8;
-  font-weight: 300;
+  font-size: 0.85em;
+  opacity: 0.9;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Specific Positions & Delays */
+/* Specific Positions & Delays (Right Side) */
 .float-1 {
   top: 20%;
   right: 10%;
@@ -519,12 +575,25 @@ body {
   animation-delay: 4s;
 }
 
-/* Add Responsive Check */
-@media (max-width: 1200px) {
-  .hero-visuals {
-    display: none;
-  }
+/* Specific Positions & Delays (Left Side) */
+.float-left-1 {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0.5s;
 }
+
+.float-left-2 {
+  top: 50%;
+  left: 5%;
+  animation-delay: 2.5s;
+}
+
+.float-left-3 {
+  bottom: 20%;
+  left: 12%;
+  animation-delay: 4.5s;
+}
+
 
 @keyframes floatCard {
 

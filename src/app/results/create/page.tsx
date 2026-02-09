@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 export default function CreateFormPage() {
     const [title, setTitle] = useState('');
+    const [author, setAuthor] = useState('');
     const [scope, setScope] = useState('');
     const [abstract, setAbstract] = useState('');
     const [file, setFile] = useState<File | null>(null);
@@ -32,6 +33,17 @@ export default function CreateFormPage() {
                             placeholder="รายละเอียด"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>ผู้จัดทำ</label>
+                        <input
+                            type="text"
+                            className={styles.inputField}
+                            placeholder="รายละเอียด"
+                            value={author}
+                            onChange={(e) => setAuthor(e.target.value)}
                         />
                     </div>
 

@@ -227,3 +227,192 @@
         transform: translateY(0px);
     }
 }
+
+/* Floating Side Elements */
+.floatingSide {
+    position: fixed;
+    top: 50%;
+    left: 40px;
+    transform: translateY(-50%);
+    width: 260px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    pointer-events: none;
+    /* Let clicks pass through if empty */
+}
+
+.floatingCard {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    animation: slideInLeft 0.8s ease-out backwards;
+    cursor: default;
+    pointer-events: auto;
+}
+
+.floatingCard:hover {
+    transform: translateX(10px) scale(1.02);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-color: #e2e8f0;
+}
+
+.floatingCard:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.floatingCard:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.floatingCard:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.floatingIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 12px;
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.cardTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+}
+
+.cardDesc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 1400px) {
+    .floatingSide {
+        display: none;
+    }
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+    background: white;
+    padding: 32px;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.95);
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes modalPop {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modalIcon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.modalTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.modalDesc {
+    color: #64748b;
+    font-size: 15px;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.modalButtons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modalBtnCancel {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.modalBtnCancel:hover {
+    background: #f8fafc;
+    color: #334155;
+}
+
+.modalBtnConfirm {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    background: #10b981;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.modalBtnConfirm:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}

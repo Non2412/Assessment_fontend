@@ -1,0 +1,164 @@
+/* Intro Layout */
+.introLayout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.introSidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.sidebarSection {
+    margin-bottom: 24px;
+}
+
+.sidebarSection:last-child {
+    margin-bottom: 0;
+}
+
+.sidebarLabel {
+    font-size: 14px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.sidebarValue {
+    font-size: 16px;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.introMain {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Document Viewer (Mock PDF) */
+.documentViewer {
+    background: #525659;
+    /* PDF Viewer Grey */
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+    height: 700px;
+    /* Fixed height for scrolling */
+    overflow-y: auto;
+    position: relative;
+}
+
+.paperPage {
+    background: white;
+    max-width: 800px;
+    /* A4 Ratio approx */
+    min-height: 1000px;
+    margin: 0 auto 30px auto;
+    padding: 60px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    color: #1e293b;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.paperTitle {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #000;
+}
+
+.paperContent p {
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+/* Actions Bar */
+.actionBar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    align-items: center;
+}
+
+.downloadBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    color: #475569;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.downloadBtn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #1e293b;
+}
+
+.startBtn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.startBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
+}
+
+@media (max-width: 1024px) {
+    .introLayout {
+        flex-direction: column;
+    }
+
+    .introSidebar {
+        width: 100%;
+        position: static;
+        max-height: none;
+    }
+
+    .documentViewer {
+        padding: 20px;
+    }
+
+    .paperPage {
+        padding: 30px;
+    }
+}

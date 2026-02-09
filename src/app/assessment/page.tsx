@@ -7,23 +7,23 @@ export default function AssessmentPage() {
     const [assessments, setAssessments] = useState<any[]>([]);
 
     useEffect(() => {
-        const loadAssessments = () => {
-            const saved = localStorage.getItem('assessment_forms');
-            if (saved) {
-                const forms = JSON.parse(saved);
-                // Filter only published forms
-                const published = forms.filter((f: any) => f.isPublished);
-                setAssessments(published);
-            } else {
+        const loadAssessments = async () => {
+            try {
+                const res = await fetch('/api/assessments?isPublished=true', { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log("Loaded assessments:", data);
+                    setAssessments(data);
+                } else {
+                    setAssessments([]);
+                }
+            } catch (error) {
+                console.error("Failed to load assessments", error);
                 setAssessments([]);
             }
         };
 
         loadAssessments();
-
-        // Optional: Listen for storage events to update in real-time if multiple tabs open
-        window.addEventListener('storage', loadAssessments);
-        return () => window.removeEventListener('storage', loadAssessments);
     }, []);
 
     return (
@@ -39,7 +39,7 @@ export default function AssessmentPage() {
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                     {assessments.map((assessment) => (
-                        <Link href={`/assessment/${assessment.id}`} key={assessment.id} style={{ textDecoration: 'none' }}>
+                        <Link href={`/assessment/${assessment._id || assessment.id}`} key={assessment._id || assessment.id} style={{ textDecoration: 'none' }}>
                             <div style={{
                                 background: 'white',
                                 padding: '24px',

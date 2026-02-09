@@ -5,117 +5,168 @@ import CreateAssessmentModal from './CreateAssessmentModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import PublishConfirmationModal from './PublishConfirmationModal';
 
+interface AssessmentForm {
+  _id?: string; // MongoDB ID
+  id?: string;  // For compatibility or display
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  author?: string;
+  scope: string;
+  abstract: string;
+  file?: File | null;
+  fileUrl?: string;
+  fileData?: string; // Base64 for API
+  isDraft?: boolean;
+  isPublished?: boolean;
+  status?: string;
+  // Fallbacks
+  description?: string;
+  fullContent?: string | null;
+}
+
 export default function CreateAssessmentPage() {
-  const [filter, setFilter] = useState('owned-me');
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [publishingId, setPublishingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
 
-  // State for forms list to support adding new drafts
-  const [recentForms, setRecentForms] = useState<any[]>([]);
+  // State for forms list
+  const [recentForms, setRecentForms] = useState<AssessmentForm[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string>('guest');
 
-  // Load from LocalStorage on mount
-  React.useEffect(() => {
-    const saved = localStorage.getItem('assessment_forms');
-    if (saved) {
-      setRecentForms(JSON.parse(saved));
-    } else {
-      // Default initial data if empty
-      setRecentForms([
-        { id: 1, title: 'แบบประเมินความพึงพอใจ', subtitle: 'Web Development', icon: '📝', isDraft: false, isPublished: false }
-      ]);
+  // Load User and Forms
+  const fetchForms = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/assessments?userId=${userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        // Map _id to id if necessary, or just use _id
+        setRecentForms(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch forms", error);
+    } finally {
+      setIsLoaded(true);
     }
+  };
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    let userId = 'guest';
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        userId = user.id || user.username;
+      } catch (e) { }
+    }
+    setCurrentUserId(userId);
+    fetchForms(userId);
   }, []);
 
-  // Save to LocalStorage whenever forms change
-  React.useEffect(() => {
-    if (recentForms.length > 0) {
-      localStorage.setItem('assessment_forms', JSON.stringify(recentForms));
-    }
-  }, [recentForms]);
-
-  // Track which form is being edited (if any)
-  const [editingForm, setEditingForm] = useState<any>(null);
+  // Track which form is being edited
+  const [editingForm, setEditingForm] = useState<AssessmentForm | null>(null);
 
   const handleOpenNew = () => {
-    setEditingForm(null); // Reset editing state
+    setEditingForm(null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDraft = (form: any) => {
-    // Only open if it's a draft
+  const handleOpenDraft = (form: AssessmentForm) => {
     if (form.isDraft) {
       setEditingForm({
-        id: form.id,
-        title: form.title,
-        scope: '', // Mock data doesn't have scope yet
-        abstract: '',
-        file: null
+        ...form,
+        id: form._id as string // Ensure ID is passed for updates
       });
       setIsModalOpen(true);
     }
   };
 
-  const handleSaveDraft = (data: any) => {
-    // Check if empty - don't save empty drafts
-    if (!data.title && !data.scope && !data.abstract && !data.file) return;
-
-    if (data.id) {
-      // Update existing draft
-      setRecentForms(prev => prev.map(f =>
-        f.id === data.id ? { ...f, title: data.title || 'แบบร่าง (ไม่มีชื่อ)', subtitle: 'ฉบับร่างล่าสุด', isDraft: true } : f
-      ));
+  const handleSaveOrCreate = async (data: AssessmentForm, isDraft: boolean) => {
+    // If updating existing (we have an ID)
+    if (data.id || data._id) {
+      // UPDATE logic (PUT)
+      const id = data.id || data._id;
+      try {
+        await fetch(`/api/assessments/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            isDraft: isDraft,
+            subtitle: isDraft ? 'ฉบับร่างล่าสุด' : 'สร้างเสร็จสมบูรณ์',
+            icon: isDraft ? '📄' : '✅'
+          })
+        });
+        fetchForms(currentUserId); // Refresh list
+      } catch (error) {
+        console.error("Update failed", error);
+      }
     } else {
-      // Create new draft
-      const newId = Math.max(...recentForms.map(f => f.id), 0) + 1;
-      setRecentForms(prev => [{
-        id: newId,
-        title: data.title || 'แบบร่าง (ไม่มีชื่อ)',
-        subtitle: 'ฉบับร่างล่าสุด',
-        icon: '📄',
-        isDraft: true,
-        isPublished: false
-      }, ...prev]);
+      // CREATE logic (POST)
+      try {
+        await fetch('/api/assessments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            userId: currentUserId,
+            isDraft: isDraft,
+            subtitle: isDraft ? 'ฉบับร่างล่าสุด' : 'สร้างเสร็จสมบูรณ์',
+            icon: isDraft ? '📄' : '✅'
+          })
+        });
+        fetchForms(currentUserId);
+      } catch (error) {
+        console.error("Create failed", error);
+      }
     }
   };
 
-  const handleCreate = (data: any) => {
-    const newId = data.id || Math.max(...recentForms.map(f => f.id), 0) + 1;
-
-    if (data.id) {
-      setRecentForms(prev => prev.map(f =>
-        f.id === data.id ? { ...f, title: data.title, subtitle: 'สร้างเสร็จสมบูรณ์', isDraft: false } : f
-      ));
-    } else {
-      setRecentForms(prev => [{
-        id: newId,
-        title: data.title,
-        subtitle: 'สร้างเสร็จสมบูรณ์',
-        icon: '✅',
-        isDraft: false,
-        isPublished: false
-      }, ...prev]);
-    }
+  const handleSaveDraft = (data: AssessmentForm) => {
+    handleSaveOrCreate(data, true);
   };
 
-  const handleDelete = (id: number, e: React.MouseEvent) => {
+  const handleCreate = (data: AssessmentForm) => {
+    handleSaveOrCreate(data, false);
+  };
+
+  const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setDeletingId(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deletingId) {
-      setRecentForms(prev => prev.filter(f => f.id !== deletingId));
+      try {
+        await fetch(`/api/assessments/${deletingId}`, { method: 'DELETE' });
+        fetchForms(currentUserId);
+      } catch (error) {
+        console.error("Delete failed", error);
+      }
       setDeletingId(null);
     }
   };
 
-  const confirmPublish = () => {
+  const confirmPublish = async () => {
     if (publishingId) {
-      // Mock publish action: update status/icon
-      setRecentForms(prev => prev.map(f =>
-        f.id === publishingId ? { ...f, subtitle: 'กำลังเปิดใช้งาน (Published)', icon: '🚀', isPublished: true, status: 'Open' } : f
-      ));
+      try {
+        await fetch(`/api/assessments/${publishingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            isPublished: true,
+            isDraft: false,
+            status: 'Open',
+            subtitle: 'กำลังเปิดใช้งาน (Published)',
+            icon: '🚀'
+          })
+        });
+        fetchForms(currentUserId);
+      } catch (error) {
+        console.error("Publish failed", error);
+      }
       setPublishingId(null);
     }
   };
@@ -133,7 +184,6 @@ export default function CreateAssessmentPage() {
 
         <div className={styles.newFormContainer}>
           <div style={{ width: '180px' }}>
-            {/* Click to open modal instead of Link */}
             <div
               className={styles.createCard}
               onClick={handleOpenNew}
@@ -149,30 +199,12 @@ export default function CreateAssessmentPage() {
       <section className={styles.recentForms}>
         <div className={styles.recentHeader}>
           <h2 className={styles.sectionHeading}>แบบฟอร์มล่าสุด</h2>
-
-          <div className={styles.recentActions}>
-            <select
-              className={styles.ownerFilter}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="owned-me">ของทุกคน</option>
-              <option value="owned-anyone">ฉันเป็นเจ้าของ</option>
-              <option value="not-owned-me">ไม่ได้เป็นเจ้าของ</option>
-            </select>
-
-            <div className={styles.displayOptions}>
-              <button className={styles.iconBtn}>▦</button>
-              <button className={styles.iconBtn}>AZ</button>
-              <button className={styles.iconBtn}>📁</button>
-            </div>
-          </div>
         </div>
 
         <div className={styles.formsGrid}>
           {recentForms.map((form) => (
             <div
-              key={form.id}
+              key={form._id || form.id} // Use MongoDB _id preferably
               className={styles.resultCard}
               onClick={() => handleOpenDraft(form)}
               style={{
@@ -181,9 +213,8 @@ export default function CreateAssessmentPage() {
                 position: 'relative'
               }}
             >
-              {/* Delete Button */}
               <button
-                onClick={(e) => handleDelete(form.id, e)}
+                onClick={(e) => handleDelete(form._id as string, e)}
                 style={{
                   position: 'absolute',
                   top: '12px',
@@ -203,14 +234,6 @@ export default function CreateAssessmentPage() {
                   fontSize: '14px',
                   transition: 'all 0.2s'
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = '#fee2e2';
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
                 title="ลบแบบฟอร์ม"
               >
                 🗑️
@@ -224,7 +247,6 @@ export default function CreateAssessmentPage() {
                 className={styles.resultCardAvatar}
                 style={{ background: form.isDraft ? '#94a3b8' : 'white' }}
               >
-                {/* Icon SVG (Clipboard/Form) */}
                 {form.isDraft ? (
                   <span style={{ fontSize: '20px' }}>✏️</span>
                 ) : (
@@ -262,7 +284,7 @@ export default function CreateAssessmentPage() {
                       style={{ flex: 1, width: 'auto', padding: '0' }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setPublishingId(form.id);
+                        setPublishingId(form._id as string);
                       }}
                     >
                       ลงทะเบียน
@@ -275,7 +297,6 @@ export default function CreateAssessmentPage() {
         </div>
       </section>
 
-      {/* Modal Integration */}
       <CreateAssessmentModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

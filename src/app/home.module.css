@@ -10,7 +10,7 @@
 .welcomeSection {
     margin-bottom: 40px;
     /* Animated Mesh Gradient */
-    background: linear-gradient(-45deg, #0f766e, #0d9488, #0e7490, #2dd4bf);
+    background: linear-gradient(-45deg, #002D5B, #004E8A, #006FBB, #8CC63F);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
 
@@ -23,8 +23,8 @@
     justify-content: space-between;
     align-items: center;
     box-shadow:
-        0 20px 25px -5px rgba(13, 148, 136, 0.2),
-        0 8px 10px -6px rgba(13, 148, 136, 0.2);
+        0 20px 25px -5px rgba(0, 45, 91, 0.3),
+        0 8px 10px -6px rgba(0, 45, 91, 0.2);
     min-height: 220px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -216,8 +216,8 @@
 }
 
 .greenIcon {
-    background: #f0fdf4;
-    color: #22c55e;
+    background: #F4F9E9;
+    color: #8CC63F;
 }
 
 .orangeIcon {
@@ -277,14 +277,14 @@
 }
 
 .newAssessmentCard {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, #8CC63F 0%, #73A630 100%);
     color: white;
-    box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 10px 20px -5px rgba(140, 198, 63, 0.3);
 }
 
 .newAssessmentCard:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 30px -5px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 20px 30px -5px rgba(140, 198, 63, 0.4);
 }
 
 .historyCard {

@@ -19,9 +19,10 @@ interface CreateAssessmentModalProps {
     initialData?: FormData | null;
     onSaveDraft: (data: FormData) => void;
     onCreate: (data: FormData) => void;
+    isEditPdfOnly?: boolean;
 }
 
-export default function CreateAssessmentModal({ isOpen, onClose, initialData, onSaveDraft, onCreate }: CreateAssessmentModalProps) {
+export default function CreateAssessmentModal({ isOpen, onClose, initialData, onSaveDraft, onCreate, isEditPdfOnly }: CreateAssessmentModalProps) {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [scope, setScope] = useState('');
@@ -170,7 +171,10 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
                             <label className={formStyles.label}>ผู้จัดทำ (คนละบรรทัด)</label>
                             <textarea
                                 className={`${formStyles.textArea}`}
-                                style={{ minHeight: '80px', height: 'auto' }}
+                                style={{
+                                    minHeight: '80px',
+                                    height: 'auto'
+                                }}
                                 placeholder="นาย ก (64xxxx)&#10;นางสาว ข (64xxxx)"
                                 value={author}
                                 onChange={(e) => setAuthor(e.target.value)}
@@ -248,7 +252,7 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
 
                         {/* Create Button (Stacked below Upload Card) */}
                         <button className={formStyles.createButton} onClick={handleCreate}>
-                            ยืนยันการสร้าง
+                            {isEditPdfOnly ? 'ยืนยันการแก้ไขเอกสาร' : 'ยืนยันการสร้าง'}
                         </button>
                     </div>
                 </div>

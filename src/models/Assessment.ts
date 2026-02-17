@@ -18,6 +18,7 @@ export interface IAssessment extends Document {
     // Status
     isDraft: boolean;
     isPublished: boolean;
+    isUpdated: boolean;
     status: 'Draft' | 'Open' | 'Closed';
 
     // Ownership
@@ -44,6 +45,7 @@ const AssessmentSchema = new Schema<IAssessment>(
 
         isDraft: { type: Boolean, default: true },
         isPublished: { type: Boolean, default: false },
+        isUpdated: { type: Boolean, default: false },
         status: { type: String, enum: ['Draft', 'Open', 'Closed'], default: 'Draft' },
 
         createdBy: { type: Schema.Types.ObjectId, ref: 'User' },

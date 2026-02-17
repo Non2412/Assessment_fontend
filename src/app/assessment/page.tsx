@@ -1,30 +1,52 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import styles from './style.module.css';
 
 export default function AssessmentPage() {
     const [assessments, setAssessments] = useState<any[]>([]);
+    const [userId, setUserId] = useState('guest');
 
     useEffect(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                setUserId(user.id || user.username);
+            } catch (e) { }
+        }
+
         const loadAssessments = async () => {
             try {
-                const res = await fetch('/api/assessments?isPublished=true', { cache: 'no-store' });
+                const res = await fetch(`/api/assessments?isPublished=true&t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
-                    console.log("Loaded assessments:", data);
                     setAssessments(data);
-                } else {
-                    setAssessments([]);
                 }
             } catch (error) {
                 console.error("Failed to load assessments", error);
-                setAssessments([]);
             }
         };
 
         loadAssessments();
     }, []);
+
+    const shouldShowUpdatedBadge = (assessment: any) => {
+        if (assessment.isUpdated === true) {
+            const id = assessment._id || assessment.id;
+            const storageKey = `completed_at_${userId}_${id}`;
+            const lastCompletedAt = localStorage.getItem(storageKey);
+
+            if (lastCompletedAt) {
+                const updatedTime = new Date(assessment.updatedAt).getTime();
+                const completedTime = new Date(lastCompletedAt).getTime();
+                // ถ้าประเมินล่าสุด หลังจากการอัปเดตล่าสุด -> ซ่อน (Badge หายไปเมื่อประเมินเสร็จ)
+                if (completedTime > (updatedTime - 1000)) return false;
+            }
+            // ถ้ายังไม่เคยประเมิน หรือประเมินไปก่อนอัปเดต -> โชว์
+            return true;
+        }
+        return false;
+    };
 
     return (
         <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -39,7 +61,7 @@ export default function AssessmentPage() {
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                     {assessments.map((assessment) => (
-                        <Link href={`/assessment/${assessment._id || assessment.id}`} key={assessment._id || assessment.id} style={{ textDecoration: 'none' }}>
+                        <Link href={`/assessment/${assessment._id || assessment.id}`} key={assessment._id || assessment.id} style={{ textDecoration: 'none', position: 'relative' }}>
                             <div style={{
                                 background: 'white',
                                 padding: '24px',
@@ -48,30 +70,51 @@ export default function AssessmentPage() {
                                 border: '1px solid #e2e8f0',
                                 transition: 'transform 0.2s',
                                 cursor: 'pointer',
-                                height: '100%'
+                                height: '100%',
+                                position: 'relative',
+                                display: 'flex',
+                                flexDirection: 'column'
                             }}
                                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                             >
+                                {shouldShowUpdatedBadge(assessment) && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        right: '10px',
+                                        background: '#ea4335',
+                                        color: 'white',
+                                        padding: '5px 12px',
+                                        borderRadius: '8px',
+                                        fontSize: '12px',
+                                        fontWeight: '800',
+                                        boxShadow: '0 4px 6px rgba(234, 67, 53, 0.4)',
+                                        zIndex: 10,
+                                        border: '2px solid white'
+                                    }}>
+                                        อัปเดตแล้ว
+                                    </div>
+                                )}
                                 <div style={{ fontSize: '40px', marginBottom: '16px' }}>
-                                    {assessment.icon || '📝'}
+                                    {assessment.icon || '🚀'}
                                 </div>
-                                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: '#0f172a' }}>
+                                <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: '#0f172a' }}>
                                     {assessment.title}
                                 </h3>
-                                <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px', minHeight: '40px' }}>
-                                    {assessment.abstract || assessment.subtitle || assessment.scope || 'ไม่มีรายละเอียด'}
+                                <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                                    {assessment.abstract || assessment.subtitle || 'ไม่มีรายละเอียด'}
                                 </p>
                                 <button style={{
                                     width: '100%',
-                                    padding: '10px',
+                                    padding: '12px',
                                     background: '#059669',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '8px',
                                     cursor: 'pointer',
-                                    fontWeight: '500',
-                                    boxShadow: '0 2px 4px rgba(5, 150, 105, 0.2)'
+                                    fontWeight: '600',
+                                    marginTop: 'auto'
                                 }}>
                                     ทำแบบประเมิน
                                 </button>

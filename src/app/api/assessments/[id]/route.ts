@@ -32,7 +32,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
         // Update logic
         const updatedAssessment = await Assessment.findByIdAndUpdate(
             id,
-            { ...body },
+            { ...body, updatedAt: new Date() }, // Force update timestamp
             { new: true }
         );
 

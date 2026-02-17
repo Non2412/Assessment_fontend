@@ -8,16 +8,16 @@
 }
 
 .introSidebar {
-    width: 320px;
+    width: 340px;
     flex-shrink: 0;
     background: white;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
     position: sticky;
-    top: 20px;
-    max-height: calc(100vh - 40px);
+    top: 40px;
+    max-height: calc(100vh - 80px);
     overflow-y: auto;
 }
 
@@ -30,18 +30,21 @@
 }
 
 .sidebarLabel {
-    font-size: 14px;
-    color: #94a3b8;
-    font-weight: 600;
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     letter-spacing: 0.5px;
 }
 
 .sidebarValue {
-    font-size: 16px;
+    font-size: 15px;
     color: #334155;
     line-height: 1.6;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 12px;
 }
 
 .introMain {
@@ -92,14 +95,26 @@
 /* Actions Bar */
 .actionBar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 16px;
-    margin-top: 20px;
+    margin-top: 24px;
     background: white;
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
+    padding: 24px 32px;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
     align-items: center;
+}
+
+.actionText {
+    color: #64748b;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 16px;
 }
 
 .downloadBtn {

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './assessment.module.css';
 import CreateAssessmentModal from './CreateAssessmentModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -26,7 +27,7 @@ interface AssessmentForm {
 }
 
 export default function CreateAssessmentPage() {
-
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [publishingId, setPublishingId] = useState<string | null>(null);
@@ -276,7 +277,14 @@ export default function CreateAssessmentPage() {
 
                 {!form.isDraft && (
                   <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', width: '100%' }}>
-                    <button className={styles.resultCardBtn} style={{ flex: 1, width: 'auto', padding: '0' }}>
+                    <button
+                      className={styles.resultCardBtn}
+                      style={{ flex: 1, width: 'auto', padding: '0' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/results/summary/${form._id || form.id}`);
+                      }}
+                    >
                       ดูผลลัพธ์
                     </button>
                     <button

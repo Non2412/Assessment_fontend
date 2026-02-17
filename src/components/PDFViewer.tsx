@@ -77,7 +77,7 @@ export default function PDFViewer({ fileData, title }: PDFViewerProps) {
                     await page.render({
                         canvasContext: context,
                         viewport: viewport,
-                    }).promise;
+                    } as any).promise;
 
                     // Convert to data URL
                     const imageData = canvas.toDataURL('image/png');

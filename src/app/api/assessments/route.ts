@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
+import Evaluation from '@/models/Evaluation'; // Import Evaluation
 import mongoose from 'mongoose';
 import { Readable } from 'stream';
 
@@ -103,11 +104,20 @@ export async function GET(request: Request) {
         }
 
         const assessments = await Assessment.find(query)
-            .select('-fileId') // Exclude fileId from list
-            .sort({ createdAt: -1 });
+            .select('-fileId')
+            .sort({ createdAt: -1 })
+            .lean(); // Use lean for performance and easy modification
 
-        console.log(`✅ Found ${assessments.length} assessments`);
-        return NextResponse.json(assessments, { status: 200 });
+        // Fetch evaluation count for each assessment
+        const assessmentsWithCounts = await Promise.all(
+            assessments.map(async (a: any) => {
+                const count = await Evaluation.countDocuments({ assessmentId: a._id });
+                return { ...a, evaluationCount: count };
+            })
+        );
+
+        console.log(`✅ Found ${assessmentsWithCounts.length} assessments with evaluation counts`);
+        return NextResponse.json(assessmentsWithCounts, { status: 200 });
 
     } catch (error: any) {
         console.error('❌ Error:', error.message);

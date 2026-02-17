@@ -25,7 +25,8 @@ export default function Home() {
   const [stats, setStats] = useState({
     completed: 0,
     drafts: 0,
-    score: 0
+    score: 0,
+    evaluationsReceived: 0
   });
   const [recentActivity, setRecentActivity] = useState<AssessmentForm[]>([]);
 
@@ -37,28 +38,38 @@ export default function Home() {
         const userData: UserData = JSON.parse(storedUser);
         setUser(userData);
 
-        // Load Stats
         const userId = userData.id || userData.username;
+
+        // 1. Load Local Stats (Completed by this user)
         const completedKey = `completed_assessments_${userId}`;
-        const formsKey = `assessment_forms_${userId}`;
-
         const completed = JSON.parse(localStorage.getItem(completedKey) || '[]');
-        const forms = JSON.parse(localStorage.getItem(formsKey) || '[]');
 
-        const drafts = forms.filter((f: AssessmentForm) => f.isDraft).length;
+        // 2. Fetch Assessments from API (Created by this user)
+        const fetchUserData = async () => {
+          try {
+            const res = await fetch(`/api/assessments?userId=${userId}&t=${Date.now()}`, { cache: 'no-store' });
+            if (res.ok) {
+              const assessments = await res.json();
 
-        // Mock Score calculation
-        const mockScore = completed.length > 0 ? 85 : 0;
+              const drafts = assessments.filter((a: any) => a.isDraft).length;
+              const totalEvaluations = assessments.reduce((sum: number, a: any) => sum + (a.evaluationCount || 0), 0);
 
-        setStats({
-          completed: completed.length,
-          drafts: drafts,
-          score: mockScore
-        });
+              setStats({
+                completed: completed.length,
+                drafts: drafts,
+                score: completed.length > 0 ? 85 : 0,
+                evaluationsReceived: totalEvaluations
+              });
 
-        // Set Recent Activity
-        const sortedForms = [...forms].sort((a: AssessmentForm, b: AssessmentForm) => b.id - a.id).slice(0, 3);
-        setRecentActivity(sortedForms);
+              // Set Recent Activity (from DB)
+              setRecentActivity(assessments.slice(0, 3));
+            }
+          } catch (err) {
+            console.error("Dashboard: Error fetching data", err);
+          }
+        };
+
+        fetchUserData();
 
       } catch (e) {
         console.error(e);
@@ -123,10 +134,10 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.statCard}>
-            <div className={`${styles.statIcon} ${styles.orangeIcon}`}>⏳</div>
+            <div className={`${styles.statIcon} ${styles.blueIcon || styles.purpleIcon}`}>👥</div>
             <div className={styles.statInfo}>
-              <div className={styles.statLabel}>แบบร่าง (รอส่ง)</div>
-              <div className={styles.statValue}>{stats.drafts}</div>
+              <div className={styles.statLabel}>คนมาประเมิน (ฟอร์มของคุณ)</div>
+              <div className={styles.statValue}>{stats.evaluationsReceived}</div>
             </div>
           </div>
           <div className={styles.statCard}>

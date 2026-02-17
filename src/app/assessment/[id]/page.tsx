@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './assessment.module.css';
 import introStyles from './intro.module.css';
+import PDFViewer from '@/components/PDFViewer';
 
 export default function DoAssessmentPage() {
     const router = useRouter();
@@ -237,16 +238,10 @@ export default function DoAssessmentPage() {
 
                 {/* Right: Document Viewer */}
                 <main className={introStyles.introMain}>
-                    <div className={introStyles.documentViewer} style={{ padding: assessment.fileUrl ? '0' : '40px', overflow: 'hidden' }}>
+                    <div className={introStyles.documentViewer} style={{ padding: '16px', overflow: 'hidden', display: 'flex' }}>
                         {assessment.fileUrl ? (
                             /* Real PDF Viewer */
-                            <iframe
-                                src={assessment.fileUrl}
-                                width="100%"
-                                height="100%"
-                                style={{ border: 'none', display: 'block' }}
-                                title="Project Document"
-                            />
+                            <PDFViewer fileData={assessment.fileUrl} title={assessment.title} />
                         ) : (
                             /* Mock Text Content (Fallback) */
                             <>

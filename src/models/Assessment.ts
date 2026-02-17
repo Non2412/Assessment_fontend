@@ -21,7 +21,7 @@ export interface IAssessment extends Document {
     status: 'Draft' | 'Open' | 'Closed';
 
     // Ownership
-    createdBy: mongoose.Types.ObjectId;
+    createdBy?: string; // User ID (can be string, not ObjectId)
 
     createdAt: Date;
     updatedAt: Date;
@@ -46,7 +46,7 @@ const AssessmentSchema = new Schema<IAssessment>(
         isPublished: { type: Boolean, default: false },
         status: { type: String, enum: ['Draft', 'Open', 'Closed'], default: 'Draft' },
 
-        createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
+        createdBy: { type: String }, // User ID as string
     },
     {
         timestamps: true,

@@ -1,0 +1,254 @@
+{
+  "info": {
+    "name": "Assessment API Collection",
+    "description": "API endpoints for Assessment System - โครงงานประเมินรายงาน",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Assessments",
+      "item": [
+        {
+          "name": "Get All Assessments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/assessments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "assessments"]
+            },
+            "description": "ดูแบบประเมินทั้งหมด"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Assessment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"การประเมินรายงานโครงงาน\",\n  \"description\": \"ประเมินคุณภาพการออกแบบและการทำงาน\",\n  \"abstract\": \"แบบประเมินรูบริก\",\n  \"totalQuestions\": 5,\n  \"estimatedTime\": 15\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/assessments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "assessments"]
+            },
+            "description": "สร้างแบบประเมินใหม่"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assessment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/assessments/{{assessment_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "assessments", "{{assessment_id}}"]
+            },
+            "description": "ดูแบบประเมินเดียว (ใช้ assessment_id variable)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assessment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"การประเมินแก้ไข\",\n  \"status\": \"Closed\",\n  \"totalQuestions\": 10\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/assessments/{{assessment_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "assessments", "{{assessment_id}}"]
+            },
+            "description": "แก้ไขแบบประเมิน"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assessment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/assessments/{{assessment_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "assessments", "{{assessment_id}}"]
+            },
+            "description": "ลบแบบประเมิน"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Results",
+      "item": [
+        {
+          "name": "Get All Results",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/results",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "results"]
+            },
+            "description": "ดูผลลัพธ์ทั้งหมด"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Result (Start Assessment)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assessmentId\": \"{{assessment_id}}\",\n  \"userId\": \"student001\",\n  \"userName\": \"นักเรียนที่ 1\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/results",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "results"]
+            },
+            "description": "เริ่มทำแบบประเมิน (สร้าง Result ใหม่)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Result by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/results/{{result_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "results", "{{result_id}}"]
+            },
+            "description": "ดูผลลัพธ์เดียว"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Result (Save Progress)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"responses\": {\n    \"q1_ความคิดสร้างสรรค์\": 5,\n    \"q2_คุณภาพการทำงาน\": 4,\n    \"q3_การออกแบบ\": 5,\n    \"q4_ความมั่นคง\": 3,\n    \"q5_การทำเอกสาร\": 4\n  },\n  \"status\": \"In Progress\",\n  \"score\": 21,\n  \"percentage\": 84\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/results/{{result_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "results", "{{result_id}}"]
+            },
+            "description": "บันทึกคำตอบ/ความก้าวหน้า (auto-save)"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Result (Final)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"responses\": {\n    \"q1_ความคิดสร้างสรรค์\": 5,\n    \"q2_คุณภาพการทำงาน\": 4,\n    \"q3_การออกแบบ\": 5,\n    \"q4_ความมั่นคง\": 3,\n    \"q5_การทำเอกสาร\": 4\n  },\n  \"status\": \"Submitted\",\n  \"score\": 21,\n  \"percentage\": 84,\n  \"duration\": 900\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/results/{{result_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "results", "{{result_id}}"]
+            },
+            "description": "ส่งแบบประเมิน (ขั้นสุดท้าย)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Result",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/results/{{result_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "results", "{{result_id}}"]
+            },
+            "description": "ลบผลลัพธ์"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "assessment_id",
+      "value": "",
+      "type": "string",
+      "description": "ID ของแบบประเมิน (ใส่หลังจากสร้าง)"
+    },
+    {
+      "key": "result_id",
+      "value": "",
+      "type": "string",
+      "description": "ID ของผลลัพธ์ (ใส่หลังจากเริ่มแบบประเมิน)"
+    }
+  ]
+}

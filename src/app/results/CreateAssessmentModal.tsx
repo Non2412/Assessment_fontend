@@ -55,7 +55,14 @@ export default function CreateAssessmentModal({ isOpen, onClose, initialData, on
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
+            const selectedFile = e.target.files[0];
+            // Check if file size > 100MB (New limit with GridFS)
+            if (selectedFile.size > 100 * 1024 * 1024) {
+                setNotificationMessage("ไฟล์มีขนาดใหญ่เกินไป (จำกัดไม่เกิน 100MB)\nกรุณาลดขนาดไฟล์ PDF ก่อนอัปโหลด");
+                setShowNotification(true);
+                return;
+            }
+            setFile(selectedFile);
         }
     };
 

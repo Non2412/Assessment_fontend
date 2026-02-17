@@ -2,15 +2,16 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import mongoose from 'mongoose';
+import { Readable } from 'stream';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // 60 seconds
 
 export async function POST(request: Request) {
     try {
         console.log("POST /api/assessments called");
-        await dbConnect();
+        const { bucket } = await dbConnect();
 
-        // Expecting JSON with base64 file data or just standard fields
         const body = await request.json();
 
         const {
@@ -26,26 +27,48 @@ export async function POST(request: Request) {
             isDraft
         } = body;
 
-        // Validation
         if (!title) {
             return NextResponse.json({ message: 'Title is required' }, { status: 400 });
         }
 
-        // Create new assessment
+        let fileId: mongoose.Types.ObjectId | undefined;
+
+        if (fileData && typeof fileData === 'string') {
+            const base64Content = fileData.split(',')[1] || fileData;
+            const buffer = Buffer.from(base64Content, 'base64');
+
+            // Upload to GridFS
+            const uploadStream = bucket.openUploadStream(fileName || 'assessment.pdf', {
+                contentType: mimeType || 'application/pdf',
+                metadata: { userId, title }
+            });
+
+            const readableStream = new Readable();
+            readableStream.push(buffer);
+            readableStream.push(null);
+
+            await new Promise((resolve, reject) => {
+                readableStream.pipe(uploadStream)
+                    .on('error', reject)
+                    .on('finish', () => {
+                        fileId = uploadStream.id as mongoose.Types.ObjectId;
+                        resolve(null);
+                    });
+            });
+        }
+
         const assessment = await Assessment.create({
             title,
             subtitle,
             author,
             scope,
             abstract,
-            // Only save file data if provided
-            fileData: fileData || undefined,
+            fileId,
             fileName: fileName || undefined,
             mimeType: mimeType || undefined,
-
             isDraft: isDraft !== undefined ? isDraft : true,
-            isPublished: false, // Default to false
-            createdBy: mongoose.Types.ObjectId.isValid(userId) ? userId : undefined, // safely handle non-object-id users
+            isPublished: false,
+            createdBy: mongoose.Types.ObjectId.isValid(userId) ? userId : undefined,
             status: 'Draft'
         });
 
@@ -56,10 +79,7 @@ export async function POST(request: Request) {
 
     } catch (error: any) {
         console.error('Create Assessment Error:', error);
-        return NextResponse.json(
-            { message: 'Error creating assessment', error: error.message },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: 'Error creating assessment', error: error.message }, { status: 500 });
     }
 }
 

@@ -10,7 +10,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 let cached = (global as any).mongoose;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+  cached = (global as any).mongoose = { conn: null, promise: null, bucket: null };
 }
 
 async function dbConnect() {
@@ -21,7 +21,7 @@ async function dbConnect() {
   }
 
   if (cached.conn) {
-    return cached.conn;
+    return { conn: cached.conn, bucket: cached.bucket };
   }
 
   if (!cached.promise) {
@@ -36,12 +36,16 @@ async function dbConnect() {
 
   try {
     cached.conn = await cached.promise;
+    // Initialize GridFS bucket
+    cached.bucket = new mongoose.mongo.GridFSBucket(cached.conn.connection.db!, {
+      bucketName: 'assessments_files'
+    });
   } catch (e) {
     cached.promise = null;
     throw e;
   }
 
-  return cached.conn;
+  return { conn: cached.conn, bucket: cached.bucket };
 }
 
 export default dbConnect;

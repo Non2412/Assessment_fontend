@@ -289,17 +289,11 @@ export default function DoAssessmentPage() {
                                 <p className={styles.questionText}>{q.text}</p>
                                 <div className={styles.ratingGroup}>
                                     {[1, 2, 3, 4, 5].map((score) => {
-                                        const isTaken = category.questions.some(otherQ =>
-                                            otherQ.id !== q.id && answers[otherQ.id] === score
-                                        );
-                                        const disabled = isTaken;
                                         return (
                                             <button
                                                 key={score}
-                                                onClick={() => !disabled && handleAnswerChange(q.id, score)}
-                                                disabled={disabled}
+                                                onClick={() => handleAnswerChange(q.id, score)}
                                                 className={`${styles.ratingBtn} ${answers[q.id] === score ? styles.ratingBtnActive : ''}`}
-                                                style={{ opacity: disabled ? 0.3 : 1 }}
                                             >
                                                 {score}
                                             </button>

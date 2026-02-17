@@ -10,8 +10,8 @@ export interface IAssessment extends Document {
     description?: string;
     fullContent?: string; // For text content if extracted
 
-    // File handling (Base64)
-    fileData?: string; // Base64 string of the PDF
+    // File handling
+    fileId?: mongoose.Types.ObjectId; // Reference to GridFS file
     fileName?: string;
     mimeType?: string;
 
@@ -39,7 +39,7 @@ const AssessmentSchema = new Schema<IAssessment>(
         description: { type: String },
         fullContent: { type: String },
 
-        fileData: { type: String }, // Consider excluding this from default queries if too large
+        fileId: { type: Schema.Types.ObjectId }, // Store reference to GridFS object
         fileName: { type: String },
         mimeType: { type: String },
 

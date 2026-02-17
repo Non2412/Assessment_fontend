@@ -3,12 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './assessment.module.css';
 import introStyles from './intro.module.css';
+import dynamic from 'next/dynamic';
+
+const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
+    ssr: false,
+    loading: () => <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>กำลังเตรียมตัวอ่านเอกสาร...</div>
+});
 
 export default function DoAssessmentPage() {
     const router = useRouter();
     const params = useParams();
     const [assessment, setAssessment] = useState<any>(null);
     const [answers, setAnswers] = useState<Record<string, number>>({});
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
+    const [isStarted, setIsStarted] = useState(false);
+    const [userId, setUserId] = useState('guest');
+    const [loading, setLoading] = useState(true);
+    const [isRedo, setIsRedo] = useState(false); // Track if this is a second time (redo)
 
     const categories = [
         {
@@ -63,72 +75,73 @@ export default function DoAssessmentPage() {
         }
     ];
 
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [isCompleted, setIsCompleted] = useState(false);
-    const [isStarted, setIsStarted] = useState(false);
-
     useEffect(() => {
         if (!params?.id) return;
 
-        // Get current user ID
         const userStr = localStorage.getItem('user');
-        let userId = 'guest';
+        let uid = 'guest';
         if (userStr) {
             try {
                 const user = JSON.parse(userStr);
-                userId = user.id || user.username;
+                uid = user.id || user.username;
             } catch (e) { }
         }
-
-        // Check completion status using user-specific key
-        const storageKey = `completed_assessments_${userId}`;
-        const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        if (completedList.includes(params.id)) {
-            setIsCompleted(true);
-        }
+        setUserId(uid);
 
         const fetchAssessment = async () => {
             try {
-                const res = await fetch(`/api/assessments/${params.id}`);
+                const id = Array.isArray(params.id) ? params.id[0] : params.id;
+                const res = await fetch(`/api/assessments/${id}`, { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
 
                     // Handle PDF Data URL
-                    let fileUrl = null;
-                    if (data.fileData) {
-                        // Check if it already has header, if not add it (assuming PDF)
-                        // Actually my API saves just the string usually, I need to check how I implemented save
-                        // In CreateAssessmentModal, I saved filtered result of FileReader which usually includes "data:application/pdf;base64,..."
-                        // So I can use it directly.
-                        fileUrl = data.fileData;
-                    }
+                    let fileUrl = data.fileData || null;
 
                     setAssessment({
                         ...data,
                         fileUrl: fileUrl,
-                        // Ensure defaults
                         abstract: data.abstract || 'ไม่มีบทคัดย่อ',
                         scope: data.scope || 'ไม่มีขอบเขตระบุ',
                         author: data.author || 'ผู้จัดทำ'
                     });
-                } else {
-                    // Fallback to Mock ONLY if strictly ID=1 and not found in DB
-                    if (params.id === '1') {
-                        setAssessment({
-                            id: 1,
-                            title: 'ระบบบริหารจัดการการเรียนรู้ (LMS)',
-                            subtitle: 'Web Application Development',
-                            icon: '💻',
-                            author: 'นายศรราม เทพพิทักษ์ (รหัสนักศึกษา 640101)\nนางสาวสมหญิง จริงใจ (รหัสนักศึกษา 640102)',
-                            abstract: 'โครงงานนี้จัดทำขึ้นเพื่อศึกษาระบบการจัดการเรียนการสอน (LMS) โดยมีวัตถุประสงค์เพื่ออำนวยความสะดวกให้กับผู้สอนและผู้เรียนในการเข้าถึงเนื้อหาการเรียนรู้ การส่งงาน และการวัดผลประเมินผล ผ่านระบบเครือข่ายอินเทอร์เน็ต',
-                            scope: '1. ระบบจัดการสมาชิก (Authentication)\n2. ระบบจัดการรายวิชา (Course Management)\n3. ระบบแบบทดสอบออนไลน์ (Quiz System)\n4. ระบบส่งงานและตรวจงาน (Assignment Submission)',
-                            description: 'โปรดอ่านเอกสารโครงการฉบับย่อด้านขวามือก่อนเริ่มทำแบบประเมิน',
-                            fullContent: `(Mock Content)...`
-                        });
+
+                    const idFromParams = Array.isArray(params.id) ? params.id[0] : params.id;
+                    const dbId = data._id || data.id;
+
+                    const storageKey = `completed_assessments_${uid}`;
+                    const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                    const lastCompletedAt = localStorage.getItem(`completed_at_${uid}_${dbId}`) || localStorage.getItem(`completed_at_${uid}_${idFromParams}`);
+
+                    // Consider it a redo if ID is in list OR we have a completion timestamp
+                    const isInCompletedList = completedList.some((item: any) =>
+                        item?.toString() === idFromParams?.toString() ||
+                        item?.toString() === dbId?.toString()
+                    );
+
+                    if (isInCompletedList || lastCompletedAt) {
+                        setIsRedo(true);
+                        console.log("✅ Previous evaluation found. Redo mode ACTIVE.");
+
+                        const updatedTime = new Date(data.updatedAt).getTime();
+                        const completedTime = lastCompletedAt ? new Date(lastCompletedAt).getTime() : 0;
+
+                        // Allow redo if recently updated OR explicitly requested (if we had a redo button)
+                        // For now, if they can see the form and it was completed before, it's a redo
+                        if (data.isUpdated && updatedTime > (completedTime + 2000)) {
+                            setIsCompleted(false);
+                        } else {
+                            setIsCompleted(true);
+                        }
+                    } else {
+                        setIsRedo(false);
+                        console.log("ℹ️ No previous evaluation found. First time mode.");
                     }
                 }
             } catch (error) {
                 console.error("Error loading assessment", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -142,38 +155,42 @@ export default function DoAssessmentPage() {
         }));
     };
 
-    const handleSubmit = () => {
-        if (!assessment) return;
-        setIsConfirmOpen(true);
-    };
-
-    const handleConfirmSubmit = () => {
+    const handleConfirmSubmit = async () => {
         setIsConfirmOpen(false);
+        const id = Array.isArray(params.id) ? params.id[0] : params.id;
+        try {
+            const res = await fetch('/api/evaluations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    assessmentId: id,
+                    userId,
+                    answers
+                })
+            });
 
-        // Save completion status
-        if (params?.id) {
-            // Get current user ID
-            const userStr = localStorage.getItem('user');
-            let userId = 'guest';
-            if (userStr) {
-                try {
-                    const user = JSON.parse(userStr);
-                    userId = user.id || user.username;
-                } catch (e) { }
+            if (res.ok) {
+                const storageKey = `completed_assessments_${userId}`;
+                const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                if (!completedList.includes(id)) {
+                    completedList.push(id);
+                    localStorage.setItem(storageKey, JSON.stringify(completedList));
+                }
+                localStorage.setItem(`completed_at_${userId}_${id}`, new Date().toISOString());
+                setIsCompleted(true);
+                router.push('/assessment');
+            } else {
+                const err = await res.json();
+                alert(err.message || 'Error submitting');
             }
-
-            const storageKey = `completed_assessments_${userId}`;
-            const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
-            if (!completedList.includes(params.id)) {
-                completedList.push(params.id);
-                localStorage.setItem(storageKey, JSON.stringify(completedList));
-            }
+        } catch (error) {
+            console.error("Submission failed", error);
         }
-
-        // Mock submission
-        router.push('/assessment');
     };
+
+    if (loading) {
+        return <div className={styles.container} style={{ textAlign: 'center', padding: '100px' }}>กำลังโหลดแบบประเมิน...</div>;
+    }
 
     if (isCompleted) {
         return (
@@ -195,24 +212,28 @@ export default function DoAssessmentPage() {
     }
 
     if (!assessment) {
-        return (
-            <div className={styles.container} style={{ textAlign: 'center', color: '#64748b' }}>
-                <div className={styles.iconWrapper}>⏳</div>
-                <p>กำลังโหลดแบบประเมิน...</p>
-            </div>
-        );
+        return <div className={styles.container} style={{ textAlign: 'center', padding: '100px' }}>ไม่พบข้อมูลแบบประเมิน</div>;
     }
 
-    // Intro/Description View (Document Reader)
     if (!isStarted) {
         return (
-            <div className={introStyles.introLayout} style={{ padding: '40px 20px', minHeight: '100vh', background: '#f8fafc' }}>
-                {/* Left: Metadata Sidebar */}
+            <div className={introStyles.introLayout} style={{ padding: '40px 0' }}>
                 <aside className={introStyles.introSidebar}>
                     <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                        <div style={{ fontSize: '60px', marginBottom: '10px' }}>{assessment.icon}</div>
-                        <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b' }}>{assessment.title}</h2>
-                        <p style={{ color: '#64748b', fontSize: '14px' }}>{assessment.subtitle}</p>
+                        <div style={{ fontSize: '70px', marginBottom: '16px' }}>{assessment.icon}</div>
+                        <h2 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '8px' }}>{assessment.title}</h2>
+                        <div style={{
+                            fontSize: '14px',
+                            color: '#0284c7',
+                            background: '#f0f9ff',
+                            display: 'inline-block',
+                            padding: '4px 12px',
+                            borderRadius: '20px',
+                            fontWeight: '600',
+                            border: '1px solid #e0f2fe'
+                        }}>
+                            กำลังเปิดใช้งาน (Published)
+                        </div>
                     </div>
 
                     <div className={introStyles.sidebarSection}>
@@ -221,219 +242,142 @@ export default function DoAssessmentPage() {
                     </div>
 
                     <div className={introStyles.sidebarSection}>
-                        <div className={introStyles.sidebarLabel}>บทคัดย่อ (Abstract)</div>
-                        <div className={introStyles.sidebarValue} style={{ fontSize: '14px', textAlign: 'justify' }}>
-                            {assessment.abstract}
-                        </div>
+                        <div className={introStyles.sidebarLabel}>บทคัดย่อ (ABSTRACT)</div>
+                        <div className={introStyles.sidebarValue}>{assessment.abstract}</div>
                     </div>
 
                     <div className={introStyles.sidebarSection}>
-                        <div className={introStyles.sidebarLabel}>ขอบเขต (Scope)</div>
-                        <div className={introStyles.sidebarValue} style={{ whiteSpace: 'pre-line', fontSize: '14px' }}>
-                            {assessment.scope}
-                        </div>
+                        <div className={introStyles.sidebarLabel}>ขอบเขต (SCOPE)</div>
+                        <div className={introStyles.sidebarValue} style={{ whiteSpace: 'pre-line' }}>{assessment.scope}</div>
                     </div>
                 </aside>
 
-                {/* Right: Document Viewer */}
                 <main className={introStyles.introMain}>
-                    <div className={introStyles.documentViewer} style={{ padding: assessment.fileUrl ? '0' : '40px', overflow: 'hidden' }}>
+                    <div className={introStyles.documentViewer} style={{ padding: '16px', overflow: 'hidden', display: 'flex' }}>
                         {assessment.fileUrl ? (
                             /* Real PDF Viewer */
-                            <iframe
-                                src={assessment.fileUrl}
-                                width="100%"
-                                height="100%"
-                                style={{ border: 'none', display: 'block' }}
-                                title="Project Document"
-                            />
+                            <PDFViewer fileData={assessment.fileUrl} title={assessment.title} />
                         ) : (
-                            /* Mock Text Content (Fallback) */
-                            <>
-                                <div className={introStyles.paperPage}>
-                                    <h1 className={introStyles.paperTitle}>{assessment.title}</h1>
-                                    <div className={introStyles.paperContent} style={{ whiteSpace: 'pre-wrap' }}>
-                                        {assessment.fullContent || assessment.description}
-                                        {`
-                                            
-------------------------------------------------
-(จำลองเอกสาร PDF หน้า 1)
-------------------------------------------------
-
-รายวิชา: 
-โครงงานคอมพิวเตอร์ (Computer Project)
-
-อาจารย์ที่ปรึกษา:
-ผศ.ดร. ใจดี มีสุข
-
-ปีการศึกษา:
-2568
-                                            `}
-                                    </div>
-                                </div>
-
-                                <div className={introStyles.paperPage}>
-                                    <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>เนื้อหาเพิ่มเติม (หน้า 2)</h2>
-                                    <p>
-                                        2.1 ทฤษฎีที่เกี่ยวข้อง
-                                        ในการพัฒนาโครงงานนี้ ผู้จัดทำได้ศึกษาทฤษฎีและเทคโนโลยีต่าง ๆ ดังนี้...
-                                    </p>
-                                    <p>
-                                        (พื้นที่สำหรับเนื้อหาเพิ่มเติมที่สามารถเลื่อนอ่านได้...)
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                    </p>
-                                </div>
-                            </>
+                            <div style={{ padding: '100px', textAlign: 'center', color: 'white' }}>ไม่มีตัวอย่างเอกสาร</div>
                         )}
                     </div>
-
-                    {/* Action Bar */}
                     <div className={introStyles.actionBar}>
-                        <div style={{ marginRight: 'auto', fontSize: '14px', color: '#64748b' }}>
-                            อ่านเอกสารครบถ้วนแล้ว?
+                        <div className={introStyles.actionText}>อ่านเอกสารครบถ้วนแล้ว?</div>
+                        <div className={introStyles.actionButtons}>
+                            <button
+                                className={introStyles.downloadBtn}
+                                onClick={() => {
+                                    if (assessment.fileUrl) {
+                                        const link = document.createElement('a');
+                                        link.href = assessment.fileUrl;
+                                        link.download = `${assessment.title}.pdf`;
+                                        link.click();
+                                    }
+                                }}
+                            >
+                                <span style={{ fontSize: '18px' }}>📥</span> ดาวน์โหลดเอกสาร
+                            </button>
+                            <button className={introStyles.startBtn} onClick={() => setIsStarted(true)}>
+                                เริ่มทำแบบประเมิน <span>→</span>
+                            </button>
                         </div>
-                        <a
-                            href={assessment.fileUrl || '#'}
-                            download={assessment.fileUrl ? "project_document.pdf" : undefined}
-                            className={introStyles.downloadBtn}
-                            style={{ textDecoration: 'none' }}
-                            onClick={(e) => !assessment.fileUrl && e.preventDefault()}
-                        >
-                            📥 ดาวน์โหลดเอกสาร
-                        </a>
-                        <button className={introStyles.startBtn} onClick={() => setIsStarted(true)}>
-                            เริ่มทำแบบประเมิน <span>→</span>
-                        </button>
                     </div>
                 </main>
             </div>
         );
     }
 
-
     return (
-        <>
-            {/* Floating Sidebar (Desktop Only) */}
-            <div className={styles.floatingSide}>
-                <div className={styles.floatingCard}>
-                    <div className={styles.floatingIcon}>📈</div>
-                    <h3 className={styles.cardTitle}>พัฒนาตนเอง</h3>
-                    <p className={styles.cardDesc}>เห็นจุดแข็งและจุดที่ต้องปรับปรุงของตัวเองได้อย่างชัดเจน</p>
-                </div>
-                <div className={styles.floatingCard}>
-                    <div className={styles.floatingIcon}>🏫</div>
-                    <h3 className={styles.cardTitle}>พัฒนาหลักสูตร</h3>
-                    <p className={styles.cardDesc}>ช่วยให้ทางโรงเรียนปรับปรุงการเรียนการสอนให้ดียิ่งขึ้น</p>
-                </div>
-                <div className={styles.floatingCard}>
-                    <div className={styles.floatingIcon}>🎁</div>
-                    <h3 className={styles.cardTitle}>รับสิทธิพิเศษ</h3>
-                    <p className={styles.cardDesc}>สะสมแต้มจากการประเมินเพื่อแลกของรางวัลมากมาย</p>
-                </div>
-            </div>
-
-            <div className={styles.container}>
-                {/* Header */}
-                <div className={styles.headerCard}>
-                    <div className={styles.iconWrapper}>{assessment.icon || '📝'}</div>
-                    <h1 className={styles.title}>
-                        {assessment.title}
-                    </h1>
-                    <p className={styles.subtitle}>{assessment.subtitle || 'แบบประเมินออนไลน์'}</p>
-                </div>
-
-                {/* Assessment Form */}
-                {categories.map((category, index) => (
-                    <div key={index} className={styles.categoryCard}>
-                        <h2 className={styles.categoryTitle}>
-                            {category.title}
-                        </h2>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                            {category.questions.map((q) => (
-                                <div key={q.id} className={styles.questionItem}>
-                                    <p className={styles.questionText}>
-                                        {q.text}
-                                    </p>
-                                    <div className={styles.ratingGroup}>
-                                        {[1, 2, 3, 4, 5].map((score) => {
-                                            // Check if this score is already taken by another question in this category
-                                            const isTaken = category.questions.some(otherQ =>
-                                                otherQ.id !== q.id && answers[otherQ.id] === score
-                                            );
-
-                                            // If taken by another question, it should be disabled (unless it's THIS question's current answer)
-                                            const disabled = isTaken;
-
-                                            return (
-                                                <button
-                                                    key={score}
-                                                    onClick={() => !disabled && handleAnswerChange(q.id, score)}
-                                                    disabled={disabled}
-                                                    className={`
-                                                            ${styles.ratingBtn} 
-                                                            ${answers[q.id] === score ? styles.ratingBtnActive : ''}
-                                                        `}
-                                                    style={{
-                                                        opacity: disabled ? 0.3 : 1,
-                                                        cursor: disabled ? 'not-allowed' : 'pointer',
-                                                        background: disabled ? '#f1f5f9' : undefined
-                                                    }}
-                                                    title={disabled ? 'คะแนนนี้ถูกเลือกไปแล้วในหมวดหมู่นี้' : ''}
-                                                >
-                                                    {score}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                    <div className={styles.labels}>
-                                        <span>ปรับปรุง</span>
-                                        <span>ดีมาก</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+        <div className={styles.container}>
+            <div className={styles.headerCard}>
+                <div className={styles.iconWrapper}>{assessment.icon || '📝'}</div>
+                <h1 className={styles.title}>{assessment.title}</h1>
+                <p className={styles.subtitle}>{assessment.subtitle || 'แบบประเมินออนไลน์'}</p>
+                {isRedo ? (
+                    <div style={{
+                        marginTop: '12px',
+                        fontSize: '13px',
+                        color: '#059669',
+                        background: '#ecfdf5',
+                        display: 'inline-block',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontWeight: '600',
+                        border: '1px solid #d1fae5'
+                    }}>
+                        🔄 โหมดประเมินรอบที่ 2 (สามารถเลือกคะแนนซ้ำกันได้)
                     </div>
-                ))}
-
-                {/* Submit Button */}
-                <div className={styles.submitSection}>
+                ) : (
                     <button
-                        onClick={handleSubmit}
-                        className={styles.submitBtn}
+                        onClick={() => setIsRedo(true)}
+                        style={{
+                            marginTop: '12px',
+                            fontSize: '11px',
+                            color: '#64748b',
+                            background: 'transparent',
+                            border: '1px dashed #cbd5e1',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
                     >
-                        ส่งแบบประเมิน
+                        คลิกหากต้องการเลือกคะแนนซ้ำ (ทำซ้ำรอบที่ 2)
                     </button>
-                </div>
+                )}
             </div>
 
-            {/* Confirmation Modal */}
+            {categories.map((category, index) => (
+                <div key={index} className={styles.categoryCard}>
+                    <h2 className={styles.categoryTitle}>{category.title}</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        {category.questions.map((q) => (
+                            <div key={q.id} className={styles.questionItem}>
+                                <p className={styles.questionText}>{q.text}</p>
+                                <div className={styles.ratingGroup}>
+                                    {[1, 2, 3, 4, 5].map((score) => {
+                                        // Check if this score is already taken in SAME category
+                                        // ONLY enforce "no duplicates" if it is the FIRST time (not a redo)
+                                        const isScoreTakenInCategory = !isRedo && category.questions.some(
+                                            otherQ => otherQ.id !== q.id && answers[otherQ.id] === score
+                                        );
+
+                                        return (
+                                            <button
+                                                key={score}
+                                                onClick={() => handleAnswerChange(q.id, score)}
+                                                disabled={isScoreTakenInCategory}
+                                                className={`${styles.ratingBtn} ${answers[q.id] === score ? styles.ratingBtnActive : ''}`}
+                                                style={isScoreTakenInCategory ? { opacity: 0.3, cursor: 'not-allowed', backgroundColor: '#f1f5f9' } : {}}
+                                            >
+                                                {score}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+
+            <div className={styles.submitSection}>
+                <button onClick={() => setIsConfirmOpen(true)} className={styles.submitBtn}>
+                    ส่งแบบประเมิน
+                </button>
+            </div>
+
             {isConfirmOpen && (
                 <div className={styles.modalOverlay} onClick={() => setIsConfirmOpen(false)}>
                     <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                        <span className={styles.modalIcon}>🤔</span>
-                        <h3 className={styles.modalTitle}>ยืนยันการส่งแบบประเมิน?</h3>
-                        <p className={styles.modalDesc}>
-                            คุณตรวจสอบข้อมูลครบถ้วนแล้วใช่หรือไม่?<br />
-                            เมื่อส่งแล้วจะไม่สามารถแก้ไขได้
-                        </p>
+                        <h3>ยืนยันการส่งแบบประเมิน?</h3>
+                        <p>เมื่อส่งแล้วจะไม่สามารถแก้ไขได้</p>
                         <div className={styles.modalButtons}>
-                            <button
-                                className={styles.modalBtnCancel}
-                                onClick={() => setIsConfirmOpen(false)}
-                            >
-                                ยกเลิก
-                            </button>
-                            <button
-                                className={styles.modalBtnConfirm}
-                                onClick={handleConfirmSubmit}
-                            >
-                                ยืนยัน
-                            </button>
+                            <button className={styles.modalBtnCancel} onClick={() => setIsConfirmOpen(false)}>ยกเลิก</button>
+                            <button className={styles.modalBtnConfirm} onClick={handleConfirmSubmit}>ยืนยัน</button>
                         </div>
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

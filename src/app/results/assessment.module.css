@@ -235,3 +235,27 @@
     color: var(--bg-color);
     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
 }
+
+.resultCardBtnFilled {
+    width: 120px;
+    height: 36px;
+    border: 2px solid var(--main-color);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--bg-color);
+    background: var(--main-color);
+    text-transform: uppercase;
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+}
+
+.resultCardBtnFilled:hover {
+    background: #047857;
+    border-color: #047857;
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+}

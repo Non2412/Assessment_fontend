@@ -1,123 +1,68 @@
-import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb/connect';
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connectDB();
-    const { id } = await params;
+// GET Single Assessment (Includes File Data)
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
+    try {
+        await dbConnect();
+        const { id } = params;
 
-    const assessment = await Assessment.findById(id);
+        const assessment = await Assessment.findById(id);
 
-    if (!assessment) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Assessment not found',
-        },
-        { status: 404 }
-      );
+        if (!assessment) {
+            return NextResponse.json({ message: 'Assessment not found' }, { status: 404 });
+        }
+
+        return NextResponse.json(assessment, { status: 200 });
+    } catch (error: any) {
+        return NextResponse.json({ message: 'Error fetching assessment', error: error.message }, { status: 500 });
     }
-
-    return NextResponse.json({
-      success: true,
-      data: assessment,
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error instanceof Error ? error.message : 'Internal server error',
-      },
-      { status: 500 }
-    );
-  }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connectDB();
-    const { id } = await params;
-    const body = await request.json();
-    const { title, description, abstract, status, totalQuestions, estimatedTime } = body;
+// PUT/PATCH Update Assessment
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
+    try {
+        await dbConnect();
+        const { id } = params;
+        const body = await request.json();
 
-    const assessment = await Assessment.findByIdAndUpdate(
-      id,
-      {
-        title,
-        description,
-        abstract,
-        status,
-        totalQuestions,
-        estimatedTime,
-        updatedAt: Date.now(),
-      },
-      { new: true, runValidators: true }
-    );
+        // Update logic
+        const updatedAssessment = await Assessment.findByIdAndUpdate(
+            id,
+            { ...body },
+            { new: true }
+        );
 
-    if (!assessment) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Assessment not found',
-        },
-        { status: 404 }
-      );
+        if (!updatedAssessment) {
+            return NextResponse.json({ message: 'Assessment not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: 'Updated successfully', data: updatedAssessment }, { status: 200 });
+
+    } catch (error: any) {
+        return NextResponse.json({ message: 'Error updating assessment', error: error.message }, { status: 500 });
     }
-
-    return NextResponse.json({
-      success: true,
-      data: assessment,
-      message: 'Assessment updated successfully',
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error instanceof Error ? error.message : 'Internal server error',
-      },
-      { status: 500 }
-    );
-  }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connectDB();
-    const { id } = await params;
+// DELETE Assessment
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
+    try {
+        await dbConnect();
+        const { id } = params;
 
-    const assessment = await Assessment.findByIdAndDelete(id);
+        const deleted = await Assessment.findByIdAndDelete(id);
 
-    if (!assessment) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Assessment not found',
-        },
-        { status: 404 }
-      );
+        if (!deleted) {
+            return NextResponse.json({ message: 'Assessment not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: 'Deleted successfully' }, { status: 200 });
+
+    } catch (error: any) {
+        return NextResponse.json({ message: 'Error deleting assessment', error: error.message }, { status: 500 });
     }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Assessment deleted successfully',
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error instanceof Error ? error.message : 'Internal server error',
-      },
-      { status: 500 }
-    );
-  }
 }

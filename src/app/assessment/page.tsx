@@ -1,6 +1,15 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import styles from './style.module.css';
+
+interface Assessment {
+    _id: string;
+    title: string;
+    description: string;
+    status: string;
+    estimatedTime: number;
+}
 
 export default function AssessmentPage() {
     const [assessments, setAssessments] = useState<any[]>([]);
@@ -29,24 +38,6 @@ export default function AssessmentPage() {
 
         loadAssessments();
     }, []);
-
-    const shouldShowUpdatedBadge = (assessment: any) => {
-        if (assessment.isUpdated === true) {
-            const id = assessment._id || assessment.id;
-            const storageKey = `completed_at_${userId}_${id}`;
-            const lastCompletedAt = localStorage.getItem(storageKey);
-
-            if (lastCompletedAt) {
-                const updatedTime = new Date(assessment.updatedAt).getTime();
-                const completedTime = new Date(lastCompletedAt).getTime();
-                // ถ้าประเมินล่าสุด หลังจากการอัปเดตล่าสุด -> ซ่อน (Badge หายไปเมื่อประเมินเสร็จ)
-                if (completedTime > (updatedTime - 1000)) return false;
-            }
-            // ถ้ายังไม่เคยประเมิน หรือประเมินไปก่อนอัปเดต -> โชว์
-            return true;
-        }
-        return false;
-    };
 
     return (
         <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>

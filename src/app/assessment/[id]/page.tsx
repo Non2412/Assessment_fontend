@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './assessment.module.css';
 import introStyles from './intro.module.css';
+import PDFViewer from '@/components/PDFViewer';
 
 export default function DoAssessmentPage() {
     const router = useRouter();
@@ -233,15 +234,10 @@ export default function DoAssessmentPage() {
                 </aside>
 
                 <main className={introStyles.introMain}>
-                    <div className={introStyles.documentViewer} style={{ height: '750px', background: '#333' }}>
+                    <div className={introStyles.documentViewer} style={{ padding: '16px', overflow: 'hidden', display: 'flex' }}>
                         {assessment.fileUrl ? (
-                            <iframe
-                                src={`${assessment.fileUrl}#view=FitH`}
-                                width="100%"
-                                height="100%"
-                                style={{ border: 'none' }}
-                                title="Document"
-                            />
+                            /* Real PDF Viewer */
+                            <PDFViewer fileData={assessment.fileUrl} title={assessment.title} />
                         ) : (
                             <div style={{ padding: '100px', textAlign: 'center', color: 'white' }}>ไม่มีตัวอย่างเอกสาร</div>
                         )}

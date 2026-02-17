@@ -134,8 +134,8 @@ body {
   font-family: var(--font-kanit), sans-serif;
   font-size: 1.5em;
   font-weight: 700;
-  color: #059669;
-  /* Emerald-600 */
+  color: #8CC63F;
+  /* Logo Green */
 }
 
 .sidebar-nav {
@@ -174,10 +174,10 @@ body {
 }
 
 .nav-item.active {
-  background: #ecfdf5;
-  /* Emerald-50 */
-  color: #059669;
-  /* Emerald-600 */
+  background: #F4F9E9;
+  /* Brand Light Green */
+  color: #002D5B;
+  /* Brand Dark Blue */
 }
 
 .nav-icon {
@@ -209,7 +209,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #10b981;
+  background: #8CC63F;
   color: white;
   text-align: center;
   padding: 12px;
@@ -217,13 +217,13 @@ body {
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(140, 198, 63, 0.2);
 }
 
 .login-btn-sidebar:hover {
-  background: #059669;
+  background: #73A630;
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(140, 198, 63, 0.3);
 }
 
 .logout-btn {
@@ -329,13 +329,13 @@ body {
 }
 
 .status-dot.green {
-  background: #10b981;
-  box-shadow: 0 0 0 2px #d1fae5;
+  background: #8CC63F;
+  box-shadow: 0 0 0 2px #F4F9E9;
 }
 
 .status-dot.light-green {
-  background: #d1fae5;
-  color: #10b981;
+  background: #F4F9E9;
+  color: #8CC63F;
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -360,7 +360,7 @@ body {
 /* Hero Banner with Pattern */
 .hero-banner {
   /* Richer, deeper gradient */
-  background: linear-gradient(120deg, #0e7490 0%, #0f766e 50%, #0d9488 100%);
+  background: linear-gradient(120deg, #002D5B 0%, #004E8A 50%, #8CC63F 100%);
   border-radius: 20px;
   padding: 100px 40px;
   min-height: calc(100vh - 40px);
@@ -372,7 +372,7 @@ body {
   color: white;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(13, 148, 136, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 45, 91, 0.4);
 }
 
 .hero-banner::before {

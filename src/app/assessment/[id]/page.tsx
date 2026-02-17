@@ -3,7 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './assessment.module.css';
 import introStyles from './intro.module.css';
-import PDFViewer from '@/components/PDFViewer';
+import dynamic from 'next/dynamic';
+
+const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
+    ssr: false,
+    loading: () => <div style={{ height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>กำลังเตรียมตัวอ่านเอกสาร...</div>
+});
 
 export default function DoAssessmentPage() {
     const router = useRouter();
@@ -15,6 +20,7 @@ export default function DoAssessmentPage() {
     const [isStarted, setIsStarted] = useState(false);
     const [userId, setUserId] = useState('guest');
     const [loading, setLoading] = useState(true);
+    const [isRedo, setIsRedo] = useState(false); // Track if this is a second time (redo)
 
     const categories = [
         {
@@ -100,23 +106,36 @@ export default function DoAssessmentPage() {
                         author: data.author || 'ผู้จัดทำ'
                     });
 
-                    const id = Array.isArray(params.id) ? params.id[0] : params.id;
+                    const idFromParams = Array.isArray(params.id) ? params.id[0] : params.id;
+                    const dbId = data._id || data.id;
+
                     const storageKey = `completed_assessments_${uid}`;
                     const completedList = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                    const lastCompletedAt = localStorage.getItem(`completed_at_${uid}_${id}`);
+                    const lastCompletedAt = localStorage.getItem(`completed_at_${uid}_${dbId}`) || localStorage.getItem(`completed_at_${uid}_${idFromParams}`);
 
-                    if (completedList.includes(id)) {
+                    // Consider it a redo if ID is in list OR we have a completion timestamp
+                    const isInCompletedList = completedList.some((item: any) =>
+                        item?.toString() === idFromParams?.toString() ||
+                        item?.toString() === dbId?.toString()
+                    );
+
+                    if (isInCompletedList || lastCompletedAt) {
+                        setIsRedo(true);
+                        console.log("✅ Previous evaluation found. Redo mode ACTIVE.");
+
                         const updatedTime = new Date(data.updatedAt).getTime();
                         const completedTime = lastCompletedAt ? new Date(lastCompletedAt).getTime() : 0;
 
-                        console.log(`Checking redo. isUpdated: ${data.isUpdated}, Updated: ${updatedTime}, Completed: ${completedTime}`);
-
-                        // Allow redo if recently updated and not yet evaluated after the update
+                        // Allow redo if recently updated OR explicitly requested (if we had a redo button)
+                        // For now, if they can see the form and it was completed before, it's a redo
                         if (data.isUpdated && updatedTime > (completedTime + 2000)) {
                             setIsCompleted(false);
                         } else {
                             setIsCompleted(true);
                         }
+                    } else {
+                        setIsRedo(false);
+                        console.log("ℹ️ No previous evaluation found. First time mode.");
                     }
                 }
             } catch (error) {
@@ -274,6 +293,37 @@ export default function DoAssessmentPage() {
                 <div className={styles.iconWrapper}>{assessment.icon || '📝'}</div>
                 <h1 className={styles.title}>{assessment.title}</h1>
                 <p className={styles.subtitle}>{assessment.subtitle || 'แบบประเมินออนไลน์'}</p>
+                {isRedo ? (
+                    <div style={{
+                        marginTop: '12px',
+                        fontSize: '13px',
+                        color: '#059669',
+                        background: '#ecfdf5',
+                        display: 'inline-block',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontWeight: '600',
+                        border: '1px solid #d1fae5'
+                    }}>
+                        🔄 โหมดประเมินรอบที่ 2 (สามารถเลือกคะแนนซ้ำกันได้)
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => setIsRedo(true)}
+                        style={{
+                            marginTop: '12px',
+                            fontSize: '11px',
+                            color: '#64748b',
+                            background: 'transparent',
+                            border: '1px dashed #cbd5e1',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        คลิกหากต้องการเลือกคะแนนซ้ำ (ทำซ้ำรอบที่ 2)
+                    </button>
+                )}
             </div>
 
             {categories.map((category, index) => (
@@ -285,11 +335,19 @@ export default function DoAssessmentPage() {
                                 <p className={styles.questionText}>{q.text}</p>
                                 <div className={styles.ratingGroup}>
                                     {[1, 2, 3, 4, 5].map((score) => {
+                                        // Check if this score is already taken in SAME category
+                                        // ONLY enforce "no duplicates" if it is the FIRST time (not a redo)
+                                        const isScoreTakenInCategory = !isRedo && category.questions.some(
+                                            otherQ => otherQ.id !== q.id && answers[otherQ.id] === score
+                                        );
+
                                         return (
                                             <button
                                                 key={score}
                                                 onClick={() => handleAnswerChange(q.id, score)}
+                                                disabled={isScoreTakenInCategory}
                                                 className={`${styles.ratingBtn} ${answers[q.id] === score ? styles.ratingBtnActive : ''}`}
+                                                style={isScoreTakenInCategory ? { opacity: 0.3, cursor: 'not-allowed', backgroundColor: '#f1f5f9' } : {}}
                                             >
                                                 {score}
                                             </button>

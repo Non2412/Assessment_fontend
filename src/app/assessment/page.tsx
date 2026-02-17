@@ -3,17 +3,25 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './style.module.css';
 
-interface Assessment {
-    _id: string;
-    title: string;
-    description: string;
-    status: string;
-    estimatedTime: number;
-}
-
 export default function AssessmentPage() {
     const [assessments, setAssessments] = useState<any[]>([]);
     const [userId, setUserId] = useState('guest');
+
+    const shouldShowUpdatedBadge = (assessment: any) => {
+        if (!assessment || assessment.isUpdated !== true) return false;
+
+        const id = assessment._id || assessment.id;
+        const storageKey = `completed_at_${userId}_${id}`;
+        const lastCompletedAt = typeof window !== 'undefined' ? localStorage.getItem(storageKey) : null;
+
+        if (lastCompletedAt) {
+            const updatedTime = new Date(assessment.updatedAt).getTime();
+            const completedTime = new Date(lastCompletedAt).getTime();
+            // If evaluated after the update -> hide
+            if (completedTime > (updatedTime - 1000)) return false;
+        }
+        return true;
+    };
 
     useEffect(() => {
         const userStr = localStorage.getItem('user');

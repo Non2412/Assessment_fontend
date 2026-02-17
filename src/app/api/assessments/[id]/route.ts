@@ -33,8 +33,8 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
                 });
 
                 const buffer = Buffer.concat(chunks);
-                const mimeType = assessmentObj.mimeType || 'application/pdf';
-                assessmentObj.fileData = `data:${mimeType};base64,${buffer.toString('base64')}`;
+                const mimeType = (assessmentObj as any).mimeType || 'application/pdf';
+                (assessmentObj as any).fileData = `data:${mimeType};base64,${buffer.toString('base64')}`;
             } catch (err) {
                 console.error("Error reading from GridFS:", err);
             }
